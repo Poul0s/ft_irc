@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:35:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/10 13:05:21 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/10 15:19:07 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ class Server
 
 		void	accept_client();
 		void	read_client_input(Client &client);
+		void	process_request(Client &client, std::string &request);
+		void	process_command(Client &client, std::string &req);
 };
 
 #endif

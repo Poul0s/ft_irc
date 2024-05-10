@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/10 14:21:00 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/10 15:32:27 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,80 @@ void	Server::accept_client()
 	}
 }
 
+void	Server::process_command(Client &client, std::string &req)
+{
+	std::cout << "Processing command: " << req << std::endl;
+}
+
+void	Server::process_request(Client &client, std::string &req)
+{
+	if (client.get_status() == IDENTIFIED)
+		this->process_command(client, req);
+	else if (client.get_status() == GET_FORMAT)
+	{
+		if (req == "CAP LS 302")
+			client.set_status(SET_PASS);
+		else
+			return ;
+			//kick clients bad requests
+	}
+	else if (client.get_status() == SET_PASS)
+	{
+		if (req.rfind("PASS", 0) == 0)
+		{
+			if (req == "PASS " + this->_password + "")
+				client.set_status(SET_NICK);
+			else
+				return ;
+				//kick clients bad password
+		}
+		else
+			return ;
+			//kick clients bad requests password
+	}
+	else if (client.get_status() == SET_NICK)
+	{
+		if (req.rfind("NICK", 0) == 0)
+		{
+			std::string	nick = req.substr(5, req.size() - 5);
+			std::cout << "Nick" << ":" << nick << std::endl;
+			if (nick.size() > 15)
+				return ;
+				//kick clients bad nick size
+			client.set_nickname(nick);
+			client.set_status(SET_USER);
+		}
+		else
+			return ;
+			//kick clients bad requests nick
+	}
+	else if (client.get_status() == SET_USER)
+	{
+		if (req.rfind("USER", 0) == 0)
+		{
+			std::string	user = req.substr(5, req.find_first_of(' ', 5) - 5);
+			std::string	realname = req.substr(req.find_first_of(':'), req.size() - 1);
+			if (user.size() > 15 || realname.size() > 15)
+				return ;
+				//kick clients bad user size
+			client.set_username(user);
+			client.set_realname(realname);
+			client.set_status(IDENTIFIED);
+			std::cout << "New client : " << std::endl << "-IP: " << client.get_ip() << std::endl << "-Nick: " << client.get_nickname() << std::endl << "-User: " << client.get_username() << std::endl << "-Realname: " << client.get_realname() << std::endl;
+		}
+		else
+			return ;
+			//kick clients bad requests user
+	}
+}
+
 void	Server::read_client_input(Client &client)
 {
 	char	buffer[1024];
 	int		nb_read;
 	std::string	&currentReq = client.getCurrentReq();
 
+	std::cout << "Reading client input" << currentReq << std::endl;
 	do
 	{
 		nb_read = recv(client.get_fd(), buffer, 1023, MSG_DONTWAIT);
@@ -106,8 +174,8 @@ void	Server::read_client_input(Client &client)
 	{
 		std::string	req;
 		req = currentReq.substr(0, currentReq.find('\n'));
+		this->process_request(client, req);
 		currentReq = currentReq.substr(currentReq.find('\n') + 1);
-		std::cout << "Client request: " << req << std::endl;
 	}
 }
 
@@ -136,7 +204,6 @@ void	Server::runtime()
 			throw std::runtime_error("Error: poll failed: " + std::string(strerror(errno)));
 		else if (nbAccess == 0)
 			continue ;
-
 		if (fds[0].revents)
 		{
 			if (fds[0].revents & POLLIN)
