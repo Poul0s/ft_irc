@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/09 20:05:00 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/10 14:21:00 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	Server::set_ip(std::string ip)
 	this->_ip = ip;
 }
 
-void	Server::set_port(int port)
+void	Server::set_port(unsigned short port)
 {
 	this->_port = port;
 }
@@ -45,7 +45,8 @@ void	Server::create_socket()
 	int					sock_flags;
 	struct sockaddr_in	addr;
 
-
+	if (this->_sockfd != -1)
+		throw std::runtime_error("Error: socket already created");
 	this->_sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_sockfd == -1)
 		throw std::runtime_error("Error: socket creation failed");
@@ -83,15 +84,45 @@ void	Server::accept_client()
 	}
 }
 
-#define POLL_FLAGS POLLIN | POLLOUT | POLLRDHUP | POLLERR | POLLHUP
+void	Server::read_client_input(Client &client)
+{
+	char	buffer[1024];
+	int		nb_read;
+	std::string	&currentReq = client.getCurrentReq();
+
+	do
+	{
+		nb_read = recv(client.get_fd(), buffer, 1023, MSG_DONTWAIT);
+		if ((nb_read == -1 && errno != EAGAIN) || nb_read == 0)
+			; // disconnect client
+		else if (nb_read > 0)
+		{
+			buffer[nb_read] = 0;
+			currentReq += buffer;
+			std::cout << currentReq << std::endl;
+		}
+	} while (nb_read > 0);
+	while (currentReq.find('\n') != std::string::npos)
+	{
+		std::string	req;
+		req = currentReq.substr(0, currentReq.find('\n'));
+		currentReq = currentReq.substr(currentReq.find('\n') + 1);
+		std::cout << "Client request: " << req << std::endl;
+	}
+}
+
+#define POLL_FLAGS POLLIN | POLLRDHUP | POLLERR | POLLHUP
 
 void	Server::runtime()
 {
-	struct pollfd	fds[NB_CLIENTS_MAX + 1] = {0};
+	struct pollfd	fds[NB_CLIENTS_MAX + 1];
+	memset(fds, NB_CLIENTS_MAX + 1, sizeof(struct pollfd));
 	fds[0].fd = this->_sockfd;
 	fds[0].events = POLL_FLAGS;
 
-	while (1)
+	std::cout << "Start listening" << std::endl;
+
+	while (this->_sockfd != -1)
 	{
 		std::list<Client>::iterator	end_client_poll = this->_clients.end();
 		for (std::list<Client>::iterator it = this->_clients.begin(); it != end_client_poll; it++)
@@ -119,11 +150,11 @@ void	Server::runtime()
 		{
 			short	revents = fds[std::distance(this->_clients.begin(), it) + 1].revents;
 			if (revents & POLLIN)
-				// read client
+				this->read_client_input(*it);
 			if (revents & POLLOUT)
 				std::cout << "for who ???" << std::endl;
 			if (revents & ~(POLLIN | POLLOUT))
-				// client close
+				std::cout << "cl close" << std::endl; // todo client close
 		}
 	}
 }

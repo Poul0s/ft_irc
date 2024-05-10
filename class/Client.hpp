@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:08:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/09 19:20:30 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/10 11:44:39 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,14 @@ class	Client {
 		void	set_op(bool op);
 
 
-		int	get_fd(void);
+		int			get_fd(void);
+		std::string	&getCurrentReq(void);
 
 	private:
 		std::string	_ip;
 		std::string	_nickname;
 		std::string	_username;
+		std::string	_currentReq;
 
 		int			_fd;
 		bool		_op;

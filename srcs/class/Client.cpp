@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:40:44 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/09 19:20:54 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/10 13:06:05 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,9 @@ void	Client::set_op(bool op)
 int	Client::get_fd(void)
 {
 	return this->_fd;
+}
+
+std::string	&Client::getCurrentReq(void)
+{
+	return this->_currentReq;
 }

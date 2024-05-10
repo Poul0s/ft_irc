@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:35:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/09 19:25:40 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/10 13:05:21 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,21 +35,23 @@ class Server
 		~Server();
 
 		void	set_ip(std::string ip);
-		void	set_port(int port);
+		void	set_port(unsigned short port);
 		void	set_password(std::string password);
 		
 		void	create_socket();
 		void	runtime();
 		
-		void	accept_client();
 	
 	private:
-		std::string	_ip;
-		int			_port;
+		std::string		_ip;
+		unsigned short	_port;
 		std::string	_password;
 
 		std::list<Client>	_clients;
 		int					_sockfd;
+
+		void	accept_client();
+		void	read_client_input(Client &client);
 };
 
 #endif

@@ -6,86 +6,58 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:14:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/09 18:25:37 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/10 14:15:35 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <errno.h>
-#include <sys/socket.h>
-#include <netinet/in.h> 
-#include <stdbool.h>
-#include <asm-generic/socket.h>
-#include <string.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <list>
+#include "Server.hpp"
 #include <iostream>
+#include <cstdlib>
+#include <limits>
 
-
-bool	create_socket(int *sockfd)
+template<class T>
+bool	ft_atoi(char *str, T &res)
 {
-	int	opt;
-	int	sock_flags;
+	char	*endptr;
+	long	nb;
 
-	*sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (*sockfd == -1)
+	errno = 0;
+	nb = std::strtol(str, &endptr, 10);
+	if (*endptr != '\0' || errno == ERANGE || nb < std::numeric_limits<T>::min() || nb > std::numeric_limits<T>::max())
 		return (false);
-	opt = 1;
-	sock_flags = SO_REUSEADDR | SO_REUSEPORT;
-	if (setsockopt(*sockfd, SOL_SOCKET, sock_flags, &opt, sizeof(opt)))
-		return (false);
+	res = static_cast<int>(nb);
 	return (true);
 }
 
-void	try_accept_client(int sockfd, std::list<int> &clients)
+int	main(int ac, char **av)
 {
-	int					client_sock;
-	struct sockaddr_in	client_adress;
-	unsigned int		addr_len;
-	char				ip[INET_ADDRSTRLEN];
-
-	addr_len = sizeof(client_adress);
-	client_sock = accept(sockfd, (struct sockaddr *) &client_adress, &addr_len);
-	if (client_sock != -1)
+	if (ac != 3)
 	{
-		inet_ntop(AF_INET, &(client_adress.sin_addr), ip, INET_ADDRSTRLEN);
-		clients.push_back(client_sock);
+		std::cerr << "Usage: " << av[0] << " <port> <password>" << std::endl;
+		return (1);
 	}
-}
-
-int	main(void)
-{
-	struct sockaddr_in	addr;
-	char				ip[] = "127.0.0.1";
-	int					sockfd;
-
-	if (!create_socket(&sockfd))
-		return 1;
-	if (inet_aton(ip, &(addr.sin_addr)) == 0)
-		return 1;
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(42420);
-	if (bind(sockfd, (struct sockaddr *) &addr, sizeof(addr)) != 0)
-		return 1;
-	if (listen(sockfd, 2147483647) != 0)
-		return 1;
-	fcntl(sockfd, F_SETFL, O_NONBLOCK);
-	
-	std::list<int>	clients;
-	while (1)
+	unsigned short	port;
+	if (!::ft_atoi(av[1], port))
 	{
-		try_accept_client(sockfd, clients);
-		for (std::list<int>::iterator it = clients.begin(); it != clients.end(); it++)
+		std::cerr << "Invalid port value." << std::endl;
+		return (1);
+	}
+	else
+	{
+		try {
+			Server	sv;
+			
+			sv.set_ip("127.0.0.1");
+			sv.set_port(port);
+			sv.set_password(av[2]);
+			
+			sv.create_socket();
+			sv.runtime();
+		} catch (std::exception &err)
 		{
-			char	buff[255];
-			buff[0] = 0;
-			int rd = read(*it, buff, 255);
-			if (rd > 0)
-			{
-				buff[rd] = 0;
-				std::cout << buff << std::endl;
-			}
+			std::cerr << err.what() << std::endl;
+			return (1);
 		}
 	}
+	return (0);
 }
