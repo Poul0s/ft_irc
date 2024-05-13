@@ -1,6 +1,6 @@
 CC	=	c++
 
-CFLAGS	=	-Wall -Wextra -Werror -std=c++98 -MD
+CFLAGS	=	-Wall -Wextra -Werror -std=c++98 -MD -g
 
 SRC		=	$(wildcard srcs/class/*.cpp)				\
 			$(wildcard srcs/*.cpp)						\

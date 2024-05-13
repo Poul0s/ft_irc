@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:08:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/10 15:24:51 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/13 17:39:54 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ class	Client {
 		std::string	&get_nickname(void);
 		std::string	&get_username(void);
 		std::string	&get_realname(void);
+
+		void		disconnect(std::string reason);
 
 	private:
 		std::string	_ip;

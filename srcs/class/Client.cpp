@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:40:44 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/10 15:25:05 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/13 17:40:05 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
+#include <unistd.h>
+#include <iostream>
 
 Client::Client()
 {
@@ -90,5 +92,13 @@ std::string	&Client::get_username(void)
 std::string	&Client::get_realname(void)
 {
 	return this->_realname;
+}
+
+void	Client::disconnect(std::string reason)
+{
+	std::cout << "Disconnecting client " << this->_nickname << " for " << reason << std::endl;
+	if (this->_fd != -1)
+		close(this->_fd);
+	this->_fd = -1;
 }
 

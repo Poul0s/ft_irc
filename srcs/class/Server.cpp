@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/10 15:32:27 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/13 17:48:39 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,70 +84,80 @@ void	Server::accept_client()
 	}
 }
 
+void	Server::clean_clients()
+{
+	std::list<Client>::iterator	it = this->_clients.begin();
+	while (it != this->_clients.end())
+	{
+		if (it->get_fd() == -1)
+			it = this->_clients.erase(it);
+		else
+			it++;
+	}
+}
+
 void	Server::process_command(Client &client, std::string &req)
 {
+	(void)client;
 	std::cout << "Processing command: " << req << std::endl;
 }
 
 void	Server::process_request(Client &client, std::string &req)
 {
-	if (client.get_status() == IDENTIFIED)
-		this->process_command(client, req);
-	else if (client.get_status() == GET_FORMAT)
+	if (client.get_fd() == -1)
+		return ;
+	switch (client.get_status())
 	{
-		if (req == "CAP LS 302")
-			client.set_status(SET_PASS);
-		else
-			return ;
-			//kick clients bad requests
-	}
-	else if (client.get_status() == SET_PASS)
-	{
-		if (req.rfind("PASS", 0) == 0)
-		{
-			if (req == "PASS " + this->_password + "")
-				client.set_status(SET_NICK);
+		case IDENTIFIED:
+			this->process_command(client, req);
+			break;
+		case GET_FORMAT:
+			if (req == "CAP LS 302")
+				client.set_status(SET_PASS);
 			else
-				return ;
-				//kick clients bad password
-		}
-		else
-			return ;
-			//kick clients bad requests password
-	}
-	else if (client.get_status() == SET_NICK)
-	{
-		if (req.rfind("NICK", 0) == 0)
-		{
-			std::string	nick = req.substr(5, req.size() - 5);
-			std::cout << "Nick" << ":" << nick << std::endl;
-			if (nick.size() > 15)
-				return ;
-				//kick clients bad nick size
-			client.set_nickname(nick);
-			client.set_status(SET_USER);
-		}
-		else
-			return ;
-			//kick clients bad requests nick
-	}
-	else if (client.get_status() == SET_USER)
-	{
-		if (req.rfind("USER", 0) == 0)
-		{
-			std::string	user = req.substr(5, req.find_first_of(' ', 5) - 5);
-			std::string	realname = req.substr(req.find_first_of(':'), req.size() - 1);
-			if (user.size() > 15 || realname.size() > 15)
-				return ;
-				//kick clients bad user size
-			client.set_username(user);
-			client.set_realname(realname);
-			client.set_status(IDENTIFIED);
-			std::cout << "New client : " << std::endl << "-IP: " << client.get_ip() << std::endl << "-Nick: " << client.get_nickname() << std::endl << "-User: " << client.get_username() << std::endl << "-Realname: " << client.get_realname() << std::endl;
-		}
-		else
-			return ;
-			//kick clients bad requests user
+				client.disconnect("bad format (got [" + req + "])");
+			break;
+		case SET_PASS:
+			if (req.rfind("PASS", 0) == 0)
+			{
+				if (req == "PASS " + this->_password + "")
+					client.set_status(SET_NICK);
+				else
+					client.disconnect("bad password");
+			}
+			else
+				client.disconnect("bad request (asking PASS)");
+			break;
+		case SET_NICK:
+			if (req.rfind("NICK", 0) == 0)
+			{
+				std::string	nick = req.substr(5, req.size() - 5);
+				std::cout << "Nick" << ":" << nick << std::endl;
+				if (nick.size() > 15)
+					client.disconnect("invalid nickname size");
+				client.set_nickname(nick);
+				client.set_status(SET_USER);
+			}
+			else
+				client.disconnect("bad request (asking NICK)");
+			break;
+		case SET_USER:
+			if (req.rfind("USER", 0) == 0)
+			{
+				std::string	user = req.substr(5, req.find_first_of(' ', 5) - 5);
+				std::string	realname = req.substr(req.find_first_of(':'), req.size() - 1);
+				if (user.size() > 15 || realname.size() > 15)
+					client.disconnect("invalid user size");
+				client.set_username(user);
+				client.set_realname(realname);
+				client.set_status(IDENTIFIED);
+				std::cout << "New client : " << std::endl << "-IP: " << client.get_ip() << std::endl << "-Nick: " << client.get_nickname() << std::endl << "-User: " << client.get_username() << std::endl << "-Realname: " << client.get_realname() << std::endl;
+			}
+			else
+				client.disconnect("bad request (asking USER)");
+			break;
+		default:
+			client.disconnect("invalid command");
 	}
 }
 
@@ -162,7 +172,10 @@ void	Server::read_client_input(Client &client)
 	{
 		nb_read = recv(client.get_fd(), buffer, 1023, MSG_DONTWAIT);
 		if ((nb_read == -1 && errno != EAGAIN) || nb_read == 0)
-			; // disconnect client
+		{
+			client.disconnect("user disconnected");
+			return ;
+		}
 		else if (nb_read > 0)
 		{
 			buffer[nb_read] = 0;
@@ -174,6 +187,8 @@ void	Server::read_client_input(Client &client)
 	{
 		std::string	req;
 		req = currentReq.substr(0, currentReq.find('\n'));
+		if (req[req.size() - 1] == '\r')
+			req = req.substr(0, req.size() - 1);
 		this->process_request(client, req);
 		currentReq = currentReq.substr(currentReq.find('\n') + 1);
 	}
@@ -184,7 +199,7 @@ void	Server::read_client_input(Client &client)
 void	Server::runtime()
 {
 	struct pollfd	fds[NB_CLIENTS_MAX + 1];
-	memset(fds, NB_CLIENTS_MAX + 1, sizeof(struct pollfd));
+	memset(fds, 0, (NB_CLIENTS_MAX + 1) * sizeof(struct pollfd));
 	fds[0].fd = this->_sockfd;
 	fds[0].events = POLL_FLAGS;
 
@@ -216,12 +231,13 @@ void	Server::runtime()
 		for (std::list<Client>::iterator it = this->_clients.begin(); it != end_client_poll; it++)
 		{
 			short	revents = fds[std::distance(this->_clients.begin(), it) + 1].revents;
-			if (revents & POLLIN)
+			if (revents && revents & POLLIN)
 				this->read_client_input(*it);
-			if (revents & POLLOUT)
+			if (revents && revents & POLLOUT)
 				std::cout << "for who ???" << std::endl;
-			if (revents & ~(POLLIN | POLLOUT))
-				std::cout << "cl close" << std::endl; // todo client close
+			if (revents && revents & ~(POLLIN | POLLOUT))
+				it->disconnect("user disconnected");
 		}
+		this->clean_clients();
 	}
 }
