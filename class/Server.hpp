@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:35:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/13 17:20:06 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/21 13:55:10 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 # define NB_CLIENTS_MAX 500
 
 #include "Client.hpp"
+#include "Channel.hpp"
+
 #include <errno.h>
 #include <sys/socket.h>
 #include <netinet/in.h> 
@@ -37,6 +39,9 @@ class Server
 		void	set_ip(std::string ip);
 		void	set_port(unsigned short port);
 		void	set_password(std::string password);
+
+		std::list<Channel>	&get_channels();
+		const std::string			&get_ip() const;
 		
 		void	create_socket();
 		void	runtime();
@@ -48,6 +53,7 @@ class Server
 		std::string	_password;
 
 		std::list<Client>	_clients;
+		std::list<Channel>	_channels;
 		int					_sockfd;
 
 		void	accept_client();

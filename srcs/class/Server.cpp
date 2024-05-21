@@ -6,11 +6,13 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/13 17:48:39 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/21 13:50:10 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include "commands.h"
+#include <algorithm>
 
 Server::Server()
 {
@@ -37,6 +39,16 @@ void	Server::set_port(unsigned short port)
 void	Server::set_password(std::string password)
 {
 	this->_password = password;
+}
+
+std::list<Channel>	&Server::get_channels()
+{
+	return (this->_channels);
+}
+
+const std::string			&Server::get_ip() const
+{
+	return (this->_ip);
 }
 
 void	Server::create_socket()
@@ -70,6 +82,7 @@ void	Server::accept_client()
 	struct sockaddr_in	client_adress;
 	unsigned int		addr_len;
 
+	// todo check if nickname is unique
 	addr_len = sizeof(client_adress);
 	client_sock = accept(this->_sockfd, (struct sockaddr *)&client_adress, &addr_len);
 	if (client_sock != -1)
@@ -98,8 +111,13 @@ void	Server::clean_clients()
 
 void	Server::process_command(Client &client, std::string &req)
 {
-	(void)client;
 	std::cout << "Processing command: " << req << std::endl;
+	std::string	command = req.substr(0, req.find(' '));
+    std::transform(command.begin(), command.end(), command.begin(), &toupper);
+	std::string	params = req.substr(req.find_first_not_of(' ', req.find(' ')));
+	
+	if (command == "JOIN")
+		JoinChannel(client, *this, params);
 }
 
 void	Server::process_request(Client &client, std::string &req)

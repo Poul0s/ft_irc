@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:08:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/13 17:39:54 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/21 13:37:37 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define CLIENT_HPP
 
 # include <string>
+# include <list>
 
 enum e_status
 {
@@ -47,15 +48,17 @@ class	Client {
 		std::string	&get_username(void);
 		std::string	&get_realname(void);
 
+		void		send_request(std::string request) const;
+		void		send_request(std::string server_ip, int code, std::string data) const;
+
 		void		disconnect(std::string reason);
 
 	private:
 		std::string	_ip;
-		std::string	_nickname;
+		std::string	_nickname; // unique in server
 		std::string	_username;
 		std::string	_realname;
 		std::string	_currentReq;
-
 
 		int			_fd;
 		bool		_op;
