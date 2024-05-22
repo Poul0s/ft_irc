@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:13:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/21 13:55:14 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 11:01:34 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define CHANNEL_HPP
 
 # include <string>
+# include <pair>
 # include "Client.hpp"
 
 class Channel
@@ -36,8 +37,9 @@ class Channel
 		std::string	_name;
 		std::string	_password;
 
-		std::list<Client &>	_usersIn;
+		std::list<std::pair<Client &, bool> >	_usersIn; // first: client, second: isOperator
 
+		const std::string	Channel::get_channel_names(void) const
 };
 
 

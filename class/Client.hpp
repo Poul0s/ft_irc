@@ -6,13 +6,14 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:08:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/21 13:37:37 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 10:03:45 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
+# include "Server.hpp"
 # include <string>
 # include <list>
 
@@ -25,9 +26,10 @@ enum e_status
 	IDENTIFIED
 };
 
+class	Server;
 class	Client {
 	public:
-		Client();
+		Client(const Server &attachedServer);
 		~Client();
 
 		void	set_ip(std::string ip);
@@ -49,7 +51,7 @@ class	Client {
 		std::string	&get_realname(void);
 
 		void		send_request(std::string request) const;
-		void		send_request(std::string server_ip, int code, std::string data) const;
+		void		send_request(int code, std::string data) const;
 
 		void		disconnect(std::string reason);
 
@@ -63,6 +65,8 @@ class	Client {
 		int			_fd;
 		bool		_op;
 		int			_status;
+
+		const Server	&_attachedServer;
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:35:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/21 13:55:10 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 10:01:03 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@
 #include <iostream>
 #include <poll.h>
 
-class Server
+class	Client;
+class	Server
 {
 	public:
 		Server();

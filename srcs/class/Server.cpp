@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/21 13:50:10 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 10:03:11 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void	Server::accept_client()
 		char	ip[INET_ADDRSTRLEN];
 		inet_ntop(AF_INET, &(client_adress.sin_addr), ip, INET_ADDRSTRLEN);
 
-		Client	client;
+		Client	client (*this);
 		client.set_ip(ip);
 		client.set_fd(client_sock);
 		this->_clients.push_back(client);

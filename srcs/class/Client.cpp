@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:40:44 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/21 13:57:03 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 10:03:38 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <sys/socket.h>
 #include <algorithm>
 
-Client::Client()
+Client::Client(const Server &attachedServer) : _attachedServer(attachedServer)
 {
 	this->_op = false;
 	this->_status = GET_FORMAT;
@@ -106,7 +106,7 @@ void		Client::send_request(std::string request) const
 	send(this->_fd, request.c_str(), request.size(), MSG_NOSIGNAL | MSG_DONTWAIT);
 }
 
-void		Client::send_request(std::string server_ip, int code, std::string data) const
+void		Client::send_request(int code, std::string data) const
 {
 	std::string	request;
 	// request = ":" + server_ip + " " + code + " " + nickname + " " + data;
@@ -118,7 +118,7 @@ void		Client::send_request(std::string server_ip, int code, std::string data) co
 	} while (code != 0);
 	std::reverse(request.begin(), request.end()); // reversing itostr to set code in order
 
-	request = ":" + server_ip + " " + request + " " + this->_nickname + " " + data;
+	request = ":" + this->_attachedServer.get_ip() + " " + request + " " + this->_nickname + " " + data;
 
 	this->send_request(request);
 }

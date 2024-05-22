@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:14:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/10 14:40:13 by marvin           ###   ########.fr       */
+/*   Updated: 2024/05/22 10:19:50 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ bool	ft_atoi(char *str, T &res)
 	char	*endptr;
 	long	nb;
 
+	if (*str == '\0')
+		return (false);
 	errno = 0;
 	nb = std::strtol(str, &endptr, 10);
 	if (*endptr != '\0' || errno == ERANGE || nb < std::numeric_limits<T>::min() || nb > std::numeric_limits<T>::max())
