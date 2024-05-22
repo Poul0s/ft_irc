@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 14:05:00 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 14:28:46 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,8 @@ void	Server::process_command(Client &client, std::string &req)
 	
 	if (command == "JOIN")
 		JoinChannel(client, *this, params);
+	else if (command == "QUIT")
+		;
 }
 
 void	Server::process_request(Client &client, std::string &req)
