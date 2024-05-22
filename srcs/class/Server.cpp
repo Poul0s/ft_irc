@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 10:03:11 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 14:05:00 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,10 @@ void	Server::clean_clients()
 	while (it != this->_clients.end())
 	{
 		if (it->get_fd() == -1)
+		{
 			it = this->_clients.erase(it);
+			// todo remove from all channels
+		}
 		else
 			it++;
 	}

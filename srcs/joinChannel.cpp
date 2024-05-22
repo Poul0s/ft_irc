@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 09:52:29 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 10:17:30 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 14:04:27 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,11 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 {
 	std::list<channelData_t> ChannelsData; // first: channelName, second: channelPassword
 	std::string	channelsNameStr = params.substr(0, params.find(' '));
+	if (channelsNameStr.empty())
+	{
+		client.send_request(ERR_NEEDMOREPARAMS, "JOIN :Not enough parameters");
+		return ;
+	}
 	std::string channelsPasswordStr;
 	if (params.find(' ') != std::string::npos)
 		channelsPasswordStr = params.find_first_not_of(' ', params.find(' '));
@@ -41,7 +46,7 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 	{
 		if (it->first == "0")
 		{
-			// leave channel
+			// leave channels
 		}
 		else
 		{
@@ -49,22 +54,17 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 			std::list<Channel>::iterator	channel = std::find(channels.begin(), channels.end(), it->first);
 			if (channel != channels.end())
 			{
-
 				if (channel->get_password() != it->second)
-					client.send_request(ERR_BADCHANNELKEY, "#" + it->first + " :Cannot join channel (+k) - bad key");
-				// else if () // test limit
-				// 	;
-				// else if () // test ban
-				// 	;
+					client.send_request(ERR_BADCHANNELKEY, it->first + " :Cannot join channel (+k) - bad key");
+				else if (channel->is_full())
+					client.send_request(ERR_CHANNELISFULL, it->first + " :Cannot join channel (+l) - channel is full");
+				else if (channel->is_user_banned(client)) // test ban
+					client.send_request(ERR_BANNEDFROMCHAN, it->first + " :Cannot join channel (+b) - banned from channel");
 				else
-				{
 					channel->add_user(client);
-				}
 			}
 			else
-			{
-				// not found, what happen now ? (todo)
-			}
+				client.send_request(ERR_NOSUCHCHANNEL, it->first + " :No such channel");
 		}
 	}
 }
