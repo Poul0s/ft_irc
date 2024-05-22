@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 09:52:29 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 14:04:27 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 14:19:07 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,13 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 		ChannelData.first = channelsNameStr.substr(0, channelsNameStr.find(','));
 		if (channelsNameStr.find(','))
 			channelsNameStr.substr(channelsNameStr.find(',') + 1);
+		else
+			channelsNameStr = "";
 		ChannelData.second = channelsPasswordStr.substr(0, channelsPasswordStr.find(','));
 		if (channelsPasswordStr.find(','))
 			channelsPasswordStr.substr(channelsPasswordStr.find(',') + 1);
+		else
+			channelsPasswordStr = "";
 
 		ChannelsData.push_back(ChannelData);
 	}
