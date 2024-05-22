@@ -9,7 +9,7 @@ OBJ		=	$(addprefix obj/, $(SRC:.cpp=.o))
 
 OBJ_DIR	=	$(sort $(dir $(OBJ)))
 
-HEADER	=	-Iclass
+HEADER	=	-Iclass -Iincludes
 
 NAME	=	ft_irc
 

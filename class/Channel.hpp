@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:13:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 14:01:49 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 14:14:53 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 # define CHANNEL_HPP
 
 # include <string>
-# include <pair>
+# include <list>
 # include <set>
 # include "Client.hpp"
 
+class Client;
 class Channel
 {
 	public:
@@ -31,9 +32,9 @@ class Channel
 
 		void				set_limit(int limit);
 
-		const bool			is_full(void) const;
-		const bool			is_user_banned(const Client &client) const;
-		const bool			is_user_banned(const std::string &client) const;
+		bool				is_full(void) const;
+		bool				is_user_banned(const Client &client) const;
+		bool				is_user_banned(const std::string &client) const;
 
 		const std::string	&get_name() const;
 		const std::string	&get_password() const;
@@ -48,7 +49,7 @@ class Channel
 		std::list<std::pair<Client &, bool> >	_usersIn; // first: client, second: isChanOperator
 		std::set<std::string>					_bannedUsers;
 
-		const std::string	Channel::get_channel_names(void) const
+		const std::string	get_channel_names(void) const;
 };
 
 

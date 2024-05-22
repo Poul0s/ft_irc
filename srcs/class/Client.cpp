@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:40:44 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 10:03:38 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 14:14:08 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,11 @@ Client::Client(const Server &attachedServer) : _attachedServer(attachedServer)
 
 Client::~Client()
 {
+}
+
+bool	Client::operator==(const std::string &clientNickname) const
+{
+	return this->_nickname == clientNickname;
 }
 
 void	Client::set_ip(std::string ip)
@@ -83,6 +88,11 @@ std::string	&Client::get_ip(void)
 }
 
 std::string	&Client::get_nickname(void)
+{
+	return this->_nickname;
+}
+
+const std::string	&Client::get_nickname(void) const
 {
 	return this->_nickname;
 }

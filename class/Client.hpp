@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:08:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 10:03:45 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/22 14:13:32 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ class	Client {
 		Client(const Server &attachedServer);
 		~Client();
 
+		bool	operator==(const std::string &clientNickname) const;
+
 		void	set_ip(std::string ip);
 		void	set_nickname(std::string nickname);
 		void	set_username(std::string username);
@@ -47,6 +49,7 @@ class	Client {
 
 		std::string	&get_ip(void);
 		std::string	&get_nickname(void);
+		const std::string	&get_nickname(void) const;
 		std::string	&get_username(void);
 		std::string	&get_realname(void);
 
