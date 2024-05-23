@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:13:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 14:14:53 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 12:24:04 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,16 @@
 # include <list>
 # include <set>
 # include "Client.hpp"
+
+typedef enum	e_channel_mode
+{
+	CHAN_MODE_PRIVATE = 1, // p
+	CHAN_MODE_SECRET = 2, // s
+	CHAN_MODE_INVITE_ONLY = 4, // i
+	CHAN_MODE_TOPIC = 8, // t
+	CHAN_MODE_MODERATED = 16, // m
+	CHAN_MODE_NO_EXTERNAL_MSG = 32, // n
+} t_channel_mode;
 
 class Client;
 class Channel
@@ -32,10 +42,15 @@ class Channel
 
 		void				set_limit(int limit);
 
+		void				toggle_mode(t_channel_mode mode, bool toggle);
+
 		bool				is_full(void) const;
 		bool				is_user_banned(const Client &client) const;
 		bool				is_user_banned(const std::string &client) const;
 
+		int					get_mode(void) const;
+		bool				get_mode(t_channel_mode mode) const;
+		static std::string	mode_to_str(int mode);
 		const std::string	&get_name() const;
 		const std::string	&get_password() const;
 
@@ -45,6 +60,7 @@ class Channel
 		std::string	_name;
 		std::string	_password;
 		int			_limit;
+		int			_mode;
 
 		std::list<std::pair<Client &, bool> >	_usersIn; // first: client, second: isChanOperator
 		std::set<std::string>					_bannedUsers;

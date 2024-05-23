@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:40:44 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 14:14:08 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 11:51:44 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,11 @@ void	Client::set_op(bool op)
 void	Client::set_status(int status)
 {
 	this->_status = status;
+}
+
+bool	Client::is_op(void) const
+{
+	return this->_op;
 }
 
 int	Client::get_fd(void)

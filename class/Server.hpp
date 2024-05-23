@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:35:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 14:06:44 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 12:20:50 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,9 @@ class	Server
 		
 		void	create_socket();
 		void	runtime();
-		
+
+		void	add_channel(const Channel &channel);
+		void	broadcast(const std::string &request);
 	
 	private:
 		std::string		_ip;

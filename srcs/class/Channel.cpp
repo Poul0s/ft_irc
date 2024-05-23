@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:16:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 14:15:39 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 12:45:07 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ Channel::Channel(const std::string &name)
 {
 	this->_name = name;
 	this->_limit = -1;
+	this->_mode = 0;
 }
 
 Channel::Channel(const std::string &name, const std::string &password)
@@ -25,6 +26,7 @@ Channel::Channel(const std::string &name, const std::string &password)
 	this->_name = name;
 	this->_password = password;
 	this->_limit = -1;
+	this->_mode = 0;
 }
 
 Channel::Channel(const Channel &cpy)
@@ -41,6 +43,11 @@ Channel	&Channel::operator=(const Channel &cpy)
 	this->_name = cpy._name;
 	this->_password = cpy._password;
 	this->_limit = -1;
+	this->_mode = cpy._mode;
+
+	// this->_usersIn = cpy._usersIn;
+	this->_bannedUsers = cpy._bannedUsers;
+
 	return (*this);
 }
 
@@ -49,20 +56,58 @@ bool	Channel::operator==(const std::string &channelName) const
 	return (this->_name == channelName);
 }
 
-bool			Channel::is_full(void) const
+void	Channel::toggle_mode(t_channel_mode mode, bool toggle)
+{
+	if (toggle)
+		this->_mode |= mode;
+	else
+		this->_mode &= ~mode;
+}
+
+
+bool	Channel::is_full(void) const
 {
 	return (this->_limit != -1 && this->_usersIn.size() >= static_cast<unsigned long>(this->_limit));
 }
 
-bool			Channel::is_user_banned(const std::string &client) const
+bool	Channel::is_user_banned(const std::string &client) const
 {
 	return (std::find(this->_bannedUsers.begin(), this->_bannedUsers.end(), client) != this->_bannedUsers.end());
 }
 
-bool			Channel::is_user_banned(const Client &client) const
+bool	Channel::is_user_banned(const Client &client) const
 {
 	return (this->is_user_banned(client.get_nickname()));
 }
+
+int	Channel::get_mode(void) const
+{
+	return this->_mode;
+}
+
+bool	Channel::get_mode(t_channel_mode mode) const
+{
+	return (this->_mode & mode);
+}
+
+std::string	Channel::mode_to_str(int mode)
+{
+	std::string	res;
+	if (mode & CHAN_MODE_PRIVATE)
+		res += "p";
+	if (mode & CHAN_MODE_SECRET)
+		res += "s";
+	if (mode & CHAN_MODE_INVITE_ONLY)
+		res += "i";
+	if (mode & CHAN_MODE_TOPIC)
+		res += "t";
+	if (mode & CHAN_MODE_MODERATED)
+		res += "m";
+	if (mode & CHAN_MODE_NO_EXTERNAL_MSG)
+		res += "n";
+	return res;
+}
+
 
 const std::string	&Channel::get_name() const
 {
@@ -86,6 +131,7 @@ const std::string	Channel::get_channel_names(void) const
 			names += ' ';
 		if (it->second)
 			names += '@';
+		names += it->first.get_nickname();
 	}
 	return names;
 }
@@ -103,7 +149,6 @@ void	Channel::add_user(Client &client)
 	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
 			it->first.send_request(request);
 
-	//  (todo) send mode
 	//  (todo) send RPL_TOPIC and RPL_TOPICTIME if topic is set (code 332 and 333)
 	//  send users in channel (code 353 and 366)
 	client.send_request(RPL_NAMREPLY, "@ " + this->_name + " :" + this->get_channel_names());

@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 14:28:46 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 12:42:32 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ void	Server::accept_client()
 	struct sockaddr_in	client_adress;
 	unsigned int		addr_len;
 
-	// todo check if nickname is unique
 	addr_len = sizeof(client_adress);
 	client_sock = accept(this->_sockfd, (struct sockaddr *)&client_adress, &addr_len);
 	if (client_sock != -1)
@@ -154,18 +153,25 @@ void	Server::process_request(Client &client, std::string &req)
 		case SET_NICK:
 			if (req.rfind("NICK", 0) == 0)
 			{
+				// todo check if nickname is unique
 				std::string	nick = req.substr(5, req.size() - 5);
 				std::cout << "Nick" << ":" << nick << std::endl;
 				if (nick.size() > 15)
 					client.disconnect("invalid nickname size");
 				client.set_nickname(nick);
+				if (nick == "admin")
+					client.set_op(true);
 				client.set_status(SET_USER);
 			}
 			else
 				client.disconnect("bad request (asking NICK)");
 			break;
 		case SET_USER:
-			if (req.rfind("USER", 0) == 0)
+			if (req.rfind("USER", 0) != 0)
+				client.disconnect("bad request (asking USER)");
+			else if (req.find_first_of(' ', 5) == std::string::npos || req.find_first_of(':') == std::string::npos)
+				client.disconnect("bad USER request format (asking USER user 0 * :realname)");
+			else
 			{
 				std::string	user = req.substr(5, req.find_first_of(' ', 5) - 5);
 				std::string	realname = req.substr(req.find_first_of(':'), req.size() - 1);
@@ -175,9 +181,8 @@ void	Server::process_request(Client &client, std::string &req)
 				client.set_realname(realname);
 				client.set_status(IDENTIFIED);
 				std::cout << "New client : " << std::endl << "-IP: " << client.get_ip() << std::endl << "-Nick: " << client.get_nickname() << std::endl << "-User: " << client.get_username() << std::endl << "-Realname: " << client.get_realname() << std::endl;
+				// todo maybe send all channels mode
 			}
-			else
-				client.disconnect("bad request (asking USER)");
 			break;
 		default:
 			client.disconnect("invalid command");
@@ -263,4 +268,22 @@ void	Server::runtime()
 		}
 		this->clean_clients();
 	}
+}
+
+void	Server::add_channel(const Channel &channel)
+{
+	this->_channels.push_back(channel);
+
+	if (!channel.get_mode(CHAN_MODE_SECRET))
+	{
+		std::string	request;
+		request = ":" + this->_ip + " MODE " + channel.get_name() + " +" + Channel::mode_to_str(channel.get_mode());
+		this->broadcast(request);
+	}
+}
+
+void	Server::broadcast(const std::string &request)
+{
+	for (std::list<Client>::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+		it->send_request(request);
 }

@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:08:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/22 14:13:32 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 11:51:31 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ class	Client {
 		void	set_fd(int fd);
 		void	set_op(bool op);
 		void	set_status(int status);
+
+		bool		is_op(void) const;
 
 		int			get_fd(void);
 		int			get_status(void);
