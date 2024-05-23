@@ -6,13 +6,15 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:16:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 12:45:07 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 15:28:09 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 #include "irc_error_codes.h"
 #include <algorithm>
+
+typedef std::pair<Client &, bool> userIn_t;
 
 Channel::Channel(const std::string &name)
 {
@@ -45,7 +47,8 @@ Channel	&Channel::operator=(const Channel &cpy)
 	this->_limit = -1;
 	this->_mode = cpy._mode;
 
-	// this->_usersIn = cpy._usersIn;
+	for (std::list<userIn_t>::const_iterator it = cpy._usersIn.begin(); it != cpy._usersIn.end(); it++)
+		this->_usersIn.push_back(*it);
 	this->_bannedUsers = cpy._bannedUsers;
 
 	return (*this);
@@ -68,6 +71,22 @@ void	Channel::toggle_mode(t_channel_mode mode, bool toggle)
 bool	Channel::is_full(void) const
 {
 	return (this->_limit != -1 && this->_usersIn.size() >= static_cast<unsigned long>(this->_limit));
+}
+
+bool	Channel::is_user_in(const std::string &client) const
+{
+	for (std::list<userIn_t>::const_iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
+		if (it->first == client)
+			return true;
+	return (false);
+}
+
+bool	Channel::is_user_in(const Client &client) const
+{
+	for (std::list<userIn_t>::const_iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
+		if (it->first == client.get_nickname())
+			return true;
+	return (false);
 }
 
 bool	Channel::is_user_banned(const std::string &client) const
@@ -119,8 +138,6 @@ const std::string	&Channel::get_password() const
 	return this->_password;
 }
 
-typedef std::pair<Client &, bool> userIn_t;
-
 const std::string	Channel::get_channel_names(void) const
 {
 	std::string	names;
@@ -153,4 +170,11 @@ void	Channel::add_user(Client &client)
 	//  send users in channel (code 353 and 366)
 	client.send_request(RPL_NAMREPLY, "@ " + this->_name + " :" + this->get_channel_names());
 	client.send_request(RPL_ENDOFNAMES, this->_name + " :End of /NAMES list.");
+}
+
+void	Channel::broadcast(const std::string &request, Client &sender)
+{
+	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
+		if (!(it->first == sender.get_nickname()))
+			it->first.send_request(request);
 }

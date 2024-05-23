@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 09:52:29 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 12:27:36 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 14:02:52 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,14 +73,14 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 			}
 			else
 			{
-				if (client.is_op())
+				if (client.is_op() && it->first[0] == '#')
 				{
 					Channel channel(it->first, it->second);
 					channel.toggle_mode(CHAN_MODE_TOPIC, true);
 					channel.toggle_mode(CHAN_MODE_NO_EXTERNAL_MSG, true);
 					
 					server.add_channel(channel);
-					server.get_channels().back().add_user(client);
+					server.get_channels().back().add_user(client); // todo set user op on channel
 				}
 				else
 					client.send_request(ERR_NOSUCHCHANNEL, it->first + " :No such channel");

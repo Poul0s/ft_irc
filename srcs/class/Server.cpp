@@ -6,13 +6,14 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 12:42:32 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 15:17:48 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "commands.h"
 #include <algorithm>
+
 
 Server::Server()
 {
@@ -120,6 +121,8 @@ void	Server::process_command(Client &client, std::string &req)
 	
 	if (command == "JOIN")
 		JoinChannel(client, *this, params);
+	else if (command == "PRIVMSG")
+		SendMsg(client, *this, params);
 	else if (command == "QUIT")
 		;
 }

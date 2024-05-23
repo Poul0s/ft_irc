@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:13:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 12:24:04 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 15:26:49 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,13 @@ class Channel
 		bool	operator==(const std::string &channelName) const;
 
 		void				set_limit(int limit);
-
 		void				toggle_mode(t_channel_mode mode, bool toggle);
 
 		bool				is_full(void) const;
-		bool				is_user_banned(const Client &client) const;
+		bool				is_user_in(const std::string &client) const;
+		bool				is_user_in(const Client &client) const;
 		bool				is_user_banned(const std::string &client) const;
+		bool				is_user_banned(const Client &client) const;
 
 		int					get_mode(void) const;
 		bool				get_mode(t_channel_mode mode) const;
@@ -55,6 +56,8 @@ class Channel
 		const std::string	&get_password() const;
 
 		void	add_user(Client &user);
+		void	broadcast(const std::string &request, Client &sender);
+
 
 	private:
 		std::string	_name;
