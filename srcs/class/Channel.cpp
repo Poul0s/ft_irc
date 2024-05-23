@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:16:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 15:28:09 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 17:56:47 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ Channel	&Channel::operator=(const Channel &cpy)
 	this->_password = cpy._password;
 	this->_limit = -1;
 	this->_mode = cpy._mode;
+	this->_topic = cpy._topic;
+	this->_usersIn.clear();
 
 	for (std::list<userIn_t>::const_iterator it = cpy._usersIn.begin(); it != cpy._usersIn.end(); it++)
 		this->_usersIn.push_back(*it);
@@ -57,6 +59,40 @@ Channel	&Channel::operator=(const Channel &cpy)
 bool	Channel::operator==(const std::string &channelName) const
 {
 	return (this->_name == channelName);
+}
+
+void	Channel::set_limit(int limit)
+{
+	this->_limit = limit;
+}
+
+void	Channel::set_topic(const std::string &topic)
+{
+	this->_topic = topic;
+}
+
+void	Channel::set_user_op(const std::string &client, bool toggle)
+{
+	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
+	{
+		if (it->first == client)
+		{
+			it->second = toggle;
+			break ;
+		}
+	}
+
+	std::string	newNames = "@ " + this->_name + " :" + this->get_channel_names();
+	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
+	{
+		it->first.send_request(RPL_NAMREPLY, newNames);
+		it->first.send_request(RPL_ENDOFNAMES, this->_name + " :End of /NAMES list.");
+	}
+}
+
+void	Channel::set_user_op(const Client &client, bool toggle)
+{
+	this->set_user_op(client.get_nickname(), toggle);
 }
 
 void	Channel::toggle_mode(t_channel_mode mode, bool toggle)
@@ -99,6 +135,19 @@ bool	Channel::is_user_banned(const Client &client) const
 	return (this->is_user_banned(client.get_nickname()));
 }
 
+bool	Channel::is_user_op(const std::string &client) const
+{
+	for (std::list<userIn_t>::const_iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
+		if (it->first == client)
+			return it->second;
+	return false;
+}
+
+bool	Channel::is_user_op(const Client &client) const
+{
+	return this->is_user_op(client.get_nickname());
+}
+
 int	Channel::get_mode(void) const
 {
 	return this->_mode;
@@ -107,6 +156,11 @@ int	Channel::get_mode(void) const
 bool	Channel::get_mode(t_channel_mode mode) const
 {
 	return (this->_mode & mode);
+}
+
+const std::string	&Channel::get_topic(void) const
+{
+	return this->_topic;
 }
 
 std::string	Channel::mode_to_str(int mode)
@@ -164,9 +218,17 @@ void	Channel::add_user(Client &client)
 	std::string	request = ":" + client.get_nickname() + "!" + client.get_username() + "@" + client.get_ip();
 	request += " JOIN :" + this->_name;
 	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
-			it->first.send_request(request);
+		it->first.send_request(request);
 
-	//  (todo) send RPL_TOPIC and RPL_TOPICTIME if topic is set (code 332 and 333)
+	//  send RPL_TOPIC and RPL_TOPICTIME if topic is set (code 332 and 333)
+	std::cout << "topic: " << this->_topic << std::endl;
+	if (!this->_topic.empty())
+	{
+		client.send_request(RPL_TOPIC, "TOPIC " + this->_name + " :" + this->_topic);
+		//  todo send topic time
+	}
+	else
+		client.send_request(RPL_NOTOPIC, "TOPIC " + this->_name + " :No topic is set");
 	//  send users in channel (code 353 and 366)
 	client.send_request(RPL_NAMREPLY, "@ " + this->_name + " :" + this->get_channel_names());
 	client.send_request(RPL_ENDOFNAMES, this->_name + " :End of /NAMES list.");
@@ -177,4 +239,10 @@ void	Channel::broadcast(const std::string &request, Client &sender)
 	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
 		if (!(it->first == sender.get_nickname()))
 			it->first.send_request(request);
+}
+
+void	Channel::broadcast(const std::string &request)
+{
+	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
+		it->first.send_request(request);
 }

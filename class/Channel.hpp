@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:13:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 15:26:49 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 17:57:00 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,9 @@ class Channel
 		bool	operator==(const std::string &channelName) const;
 
 		void				set_limit(int limit);
+		void				set_topic(const std::string &topic);
+		void				set_user_op(const std::string &client, bool toggle);
+		void				set_user_op(const Client &client, bool toggle);
 		void				toggle_mode(t_channel_mode mode, bool toggle);
 
 		bool				is_full(void) const;
@@ -48,20 +51,25 @@ class Channel
 		bool				is_user_in(const Client &client) const;
 		bool				is_user_banned(const std::string &client) const;
 		bool				is_user_banned(const Client &client) const;
+		bool				is_user_op(const std::string &client) const;
+		bool				is_user_op(const Client &client) const;
 
 		int					get_mode(void) const;
 		bool				get_mode(t_channel_mode mode) const;
+		const std::string	&get_topic(void) const;
 		static std::string	mode_to_str(int mode);
 		const std::string	&get_name() const;
 		const std::string	&get_password() const;
 
 		void	add_user(Client &user);
 		void	broadcast(const std::string &request, Client &sender);
+		void	broadcast(const std::string &request);
 
 
 	private:
 		std::string	_name;
 		std::string	_password;
+		std::string	_topic;
 		int			_limit;
 		int			_mode;
 

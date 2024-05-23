@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 16:17:13 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 17:01:54 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,10 +124,13 @@ void	Server::process_command(Client &client, std::string &req)
     std::transform(command.begin(), command.end(), command.begin(), &toupper);
 	std::string	params = req.substr(req.find_first_not_of(' ', req.find(' ')));
 	
+	// maybe set a map with command as key and function as value
 	if (command == "JOIN")
 		JoinChannel(client, *this, params);
 	else if (command == "PRIVMSG")
 		SendMsg(client, *this, params);
+	else if (command == "TOPIC")
+		Topic(client, *this, params);
 	else if (command == "QUIT")
 		;
 }

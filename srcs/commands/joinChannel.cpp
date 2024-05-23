@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 09:52:29 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 16:26:44 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 17:12:22 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 					
 					server.add_channel(channel);
 					server.get_channels().back().add_user(client); // todo set user op on channel
+					server.get_channels().back().set_user_op(client, true);
 				}
 				else
 					client.send_request(ERR_NOSUCHCHANNEL, it->first + " :No such channel");
