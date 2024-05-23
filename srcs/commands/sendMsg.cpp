@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 14:06:39 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 15:29:12 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 16:20:40 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,7 @@ void	SendChannelMsg(Client &client, Server &server, std::string &channelName, st
 	std::list<Channel>::iterator	channel = std::find(channels.begin(), channels.end(), channelName);
 
 	if (channel == channels.end())
-	{
 		client.send_request(ERR_CANNOTSENDTOCHAN, "PRIVMSG :Cannot send to channel");
-		return ;
-	}
 	else
 	{
 		if (channel->get_mode(CHAN_MODE_NO_EXTERNAL_MSG) && !channel->is_user_in(client))
@@ -42,11 +39,16 @@ void	SendChannelMsg(Client &client, Server &server, std::string &channelName, st
 
 void	SendUserMsg(Client &client, Server &server, std::string &userName, std::string &message)
 {
-	(void)client;
-	(void)server;
-	(void)userName;
-	(void)message;
-	throw std::runtime_error("Not implemented");
+	std::list<Client>	&clients = server.get_clients();
+	std::list<Client>::iterator	clientIt = std::find(clients.begin(), clients.end(), userName);
+
+	if (clientIt == clients.end())
+		client.send_request(ERR_NOSUCHNICK, "PRIVMSG :No such nick");
+	else
+	{
+		std::string	request = ":" + client.get_nickname() + "!" + client.get_username() + "@" + client.get_ip() + " PRIVMSG " + userName + " :" + message;
+		clientIt->send_request(request);
+	}
 }
 
 void	SendMsg(Client &client, Server &server, std::string &params)

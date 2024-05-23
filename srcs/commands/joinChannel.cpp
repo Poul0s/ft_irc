@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 09:52:29 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 14:02:52 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 16:26:44 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 
 	while (!channelsNameStr.empty())
 	{
-		std::cout << channelsNameStr << std::endl;
 		channelData_t	ChannelData;
 		ChannelData.first = channelsNameStr.substr(0, channelsNameStr.find(','));
 		if (channelsNameStr.find(',') != std::string::npos)
@@ -47,14 +46,11 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 		ChannelsData.push_back(ChannelData);
 	}
 
-	std::cout << "nb channels: " << ChannelsData.size() << std::endl;
-
 	for (std::list<channelData_t>::iterator it = ChannelsData.begin(); it != ChannelsData.end(); it++)
 	{
-		std::cout << "testing arg: " << it->first << " " << it->second << std::endl;
 		if (it->first == "0")
 		{
-			// leave channels
+			// todo leave channels
 		}
 		else
 		{

@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:35:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 12:20:50 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 16:17:00 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ class	Server
 		void	set_password(std::string password);
 
 		std::list<Channel>	&get_channels();
+		std::list<Client>	&get_clients();
 		const std::string	&get_ip() const;
 		
 		void	create_socket();
