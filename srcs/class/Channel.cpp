@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:16:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 17:56:47 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 18:33:17 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,12 @@ const std::string	&Channel::get_password() const
 {
 	return this->_password;
 }
+
+int	Channel::get_nb_users(void) const
+{
+	return this->_usersIn.size();
+}
+
 
 const std::string	Channel::get_channel_names(void) const
 {

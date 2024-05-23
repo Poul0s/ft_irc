@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 17:01:54 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 18:42:44 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ void	Server::process_command(Client &client, std::string &req)
 	std::cout << "Processing command: " << req << std::endl;
 	std::string	command = req.substr(0, req.find(' '));
     std::transform(command.begin(), command.end(), command.begin(), &toupper);
-	std::string	params = req.substr(req.find_first_not_of(' ', req.find(' ')));
+	std::string	params = req.substr(std::min(req.find_first_not_of(' ', std::min(req.find(' '), req.size())), req.size()));
 	
 	// maybe set a map with command as key and function as value
 	if (command == "JOIN")
@@ -131,6 +131,8 @@ void	Server::process_command(Client &client, std::string &req)
 		SendMsg(client, *this, params);
 	else if (command == "TOPIC")
 		Topic(client, *this, params);
+	else if (command == "LIST")
+		List(client, *this, params);
 	else if (command == "QUIT")
 		;
 }

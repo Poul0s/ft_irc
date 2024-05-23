@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 13:20:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 17:55:31 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 18:29:48 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 # define IRC_ERROR_CODES_H
 // https://alien.net.au/irc/irc2numerics.html
 
+# define RPL_LISTSTART 321
+# define RPL_LIST 322
+# define RPL_LISTEND 323
 # define RPL_NOTOPIC 331
 # define RPL_TOPIC 332
 # define RPL_TOPICTIME 333

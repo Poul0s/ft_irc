@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:13:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 17:57:00 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/23 18:32:50 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ class Channel
 		static std::string	mode_to_str(int mode);
 		const std::string	&get_name() const;
 		const std::string	&get_password() const;
+		int					get_nb_users(void) const;
 
 		void	add_user(Client &user);
 		void	broadcast(const std::string &request, Client &sender);
