@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 13:20:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/24 10:29:41 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 14:09:33 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # define RPL_TOPICTIME 333
 # define RPL_NAMREPLY 353
 # define RPL_ENDOFNAMES 366
+# define RPL_YOUREOPER 381
 # define ERR_NOSUCHNICK 401
 # define ERR_NOSUCHCHANNEL 403
 # define ERR_CANNOTSENDTOCHAN 404
@@ -31,6 +32,7 @@
 # define ERR_USERNOTINCHANNEL 441
 # define ERR_NOTONCHANNEL 442
 # define ERR_NEEDMOREPARAMS 461
+# define ERR_PASSWDMISMATCH 464
 # define ERR_CHANNELISFULL 471
 # define ERR_BANNEDFROMCHAN 474
 # define ERR_BADCHANNELKEY 475

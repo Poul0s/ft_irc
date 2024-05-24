@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/24 10:50:57 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 14:13:06 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,8 @@ void	Server::process_command(Client &client, std::string &req)
 		List(client, *this, params);
 	else if (command == "KICK")
 		Kick(client, *this, params);
+	else if (command == "OPER")
+		Oper(client, *this, params);
 	else if (command == "QUIT")
 		;
 }
@@ -166,6 +168,7 @@ void	Server::process_request(Client &client, std::string &req)
 				client.disconnect("bad request (asking PASS)");
 			break;
 		case SET_NICK:
+		// todo change to fct of command NICK when created
 			if (req.rfind("NICK", 0) == 0)
 			{
 				// todo check if nickname is unique
@@ -174,8 +177,6 @@ void	Server::process_request(Client &client, std::string &req)
 				if (nick.size() > 15)
 					client.disconnect("invalid nickname size");
 				client.set_nickname(nick);
-				if (nick == "admin")
-					client.set_op(true);
 				client.set_status(SET_USER);
 			}
 			else
