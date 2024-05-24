@@ -1,23 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   commands.h                                         :+:      :+:    :+:   */
+/*   ft_split.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/21 09:55:04 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/24 10:51:08 by psalame          ###   ########.fr       */
+/*   Created: 2024/05/24 10:20:55 by psalame           #+#    #+#             */
+/*   Updated: 2024/05/24 10:21:19 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COMMANDS_H
-# define COMMANDS_H
-# include "Server.hpp"
+#include <list>
+#include <string>
 
-void	JoinChannel(Client &client, Server &server, std::string &params);
-void	SendMsg(Client &client, Server &server, std::string &params);
-void	Topic(Client &client, Server &server, std::string &params);
-void	List(Client &client, Server &server, std::string &params);
-void	Kick(Client &client, Server &server, std::string &params);
+std::list<std::string>	ft_split(std::string str, char sep)
+{
+	std::list<std::string>	result;
+	std::string				tmp;
 
-#endif
+	for (std::string::iterator it = str.begin(); it != str.end(); it++)
+	{
+		if (*it == sep)
+		{
+			result.push_back(tmp);
+			tmp.clear();
+		}
+		else
+			tmp += *it;
+	}
+	if (!tmp.empty())
+		result.push_back(tmp);
+	return (result);
+}

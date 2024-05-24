@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:13:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 18:32:50 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 10:43:57 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ class Channel
 		int					get_nb_users(void) const;
 
 		void	add_user(Client &user);
+		void	remove_user(Client &user);
 		void	broadcast(const std::string &request, Client &sender);
 		void	broadcast(const std::string &request);
 
@@ -74,7 +75,7 @@ class Channel
 		int			_limit;
 		int			_mode;
 
-		std::list<std::pair<Client &, bool> >	_usersIn; // first: client, second: isChanOperator
+		std::list<std::pair<Client *, bool> >	_usersIn; // first: client, second: isChanOperator
 		std::set<std::string>					_bannedUsers;
 
 		const std::string	get_channel_names(void) const;

@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 13:16:11 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 18:33:17 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 10:47:38 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "irc_error_codes.h"
 #include <algorithm>
 
-typedef std::pair<Client &, bool> userIn_t;
+typedef std::pair<Client *, bool> userIn_t;
 
 Channel::Channel(const std::string &name)
 {
@@ -75,7 +75,7 @@ void	Channel::set_user_op(const std::string &client, bool toggle)
 {
 	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
 	{
-		if (it->first == client)
+		if (*(it->first) == client)
 		{
 			it->second = toggle;
 			break ;
@@ -85,8 +85,8 @@ void	Channel::set_user_op(const std::string &client, bool toggle)
 	std::string	newNames = "@ " + this->_name + " :" + this->get_channel_names();
 	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
 	{
-		it->first.send_request(RPL_NAMREPLY, newNames);
-		it->first.send_request(RPL_ENDOFNAMES, this->_name + " :End of /NAMES list.");
+		it->first->send_request(RPL_NAMREPLY, newNames);
+		it->first->send_request(RPL_ENDOFNAMES, this->_name + " :End of /NAMES list.");
 	}
 }
 
@@ -112,7 +112,7 @@ bool	Channel::is_full(void) const
 bool	Channel::is_user_in(const std::string &client) const
 {
 	for (std::list<userIn_t>::const_iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
-		if (it->first == client)
+		if (*(it->first) == client)
 			return true;
 	return (false);
 }
@@ -120,7 +120,7 @@ bool	Channel::is_user_in(const std::string &client) const
 bool	Channel::is_user_in(const Client &client) const
 {
 	for (std::list<userIn_t>::const_iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
-		if (it->first == client.get_nickname())
+		if (*(it->first) == client.get_nickname())
 			return true;
 	return (false);
 }
@@ -138,7 +138,7 @@ bool	Channel::is_user_banned(const Client &client) const
 bool	Channel::is_user_op(const std::string &client) const
 {
 	for (std::list<userIn_t>::const_iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
-		if (it->first == client)
+		if (*(it->first) == client)
 			return it->second;
 	return false;
 }
@@ -208,7 +208,7 @@ const std::string	Channel::get_channel_names(void) const
 			names += ' ';
 		if (it->second)
 			names += '@';
-		names += it->first.get_nickname();
+		names += it->first->get_nickname();
 	}
 	return names;
 }
@@ -216,23 +216,20 @@ const std::string	Channel::get_channel_names(void) const
 void	Channel::add_user(Client &client)
 {
 	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
-		if (it->first == client.get_nickname())
+		if (*(it->first) == client.get_nickname())
 			return ;
 
-	this->_usersIn.push_back(userIn_t(client, false));
+	this->_usersIn.push_back(userIn_t(&client, false));
 	
 	std::string	request = ":" + client.get_nickname() + "!" + client.get_username() + "@" + client.get_ip();
 	request += " JOIN :" + this->_name;
 	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
-		it->first.send_request(request);
+		it->first->send_request(request);
 
 	//  send RPL_TOPIC and RPL_TOPICTIME if topic is set (code 332 and 333)
 	std::cout << "topic: " << this->_topic << std::endl;
 	if (!this->_topic.empty())
-	{
 		client.send_request(RPL_TOPIC, "TOPIC " + this->_name + " :" + this->_topic);
-		//  todo send topic time
-	}
 	else
 		client.send_request(RPL_NOTOPIC, "TOPIC " + this->_name + " :No topic is set");
 	//  send users in channel (code 353 and 366)
@@ -240,15 +237,29 @@ void	Channel::add_user(Client &client)
 	client.send_request(RPL_ENDOFNAMES, this->_name + " :End of /NAMES list.");
 }
 
+void	Channel::remove_user(Client &user)
+{
+	std::list<userIn_t>::iterator it = this->_usersIn.begin();
+	while (it != this->_usersIn.end())
+	{
+		if (*(it->first) == user.get_nickname())
+		{
+			this->_usersIn.erase(it);
+			break ;
+		}
+		it++;
+	}
+}
+
 void	Channel::broadcast(const std::string &request, Client &sender)
 {
 	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
-		if (!(it->first == sender.get_nickname()))
-			it->first.send_request(request);
+		if (!(*(it->first) == sender.get_nickname()))
+			it->first->send_request(request);
 }
 
 void	Channel::broadcast(const std::string &request)
 {
 	for (std::list<userIn_t>::iterator it = this->_usersIn.begin(); it != this->_usersIn.end(); it++)
-		it->first.send_request(request);
+		it->first->send_request(request);
 }

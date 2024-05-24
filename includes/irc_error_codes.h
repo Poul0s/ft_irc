@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 13:20:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 18:29:48 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 10:29:41 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # define ERR_NORECIPIENT 411
 # define ERR_NOTEXTTOSEND 412
 # define ERR_UNKNOWNCOMMAND 421
+# define ERR_USERNOTINCHANNEL 441
 # define ERR_NOTONCHANNEL 442
 # define ERR_NEEDMOREPARAMS 461
 # define ERR_CHANNELISFULL 471

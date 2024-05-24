@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 09:52:29 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 17:12:22 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 07:33:14 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,21 +62,21 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 					client.send_request(ERR_BADCHANNELKEY, it->first + " :Cannot join channel (+k) - bad key");
 				else if (channel->is_full())
 					client.send_request(ERR_CHANNELISFULL, it->first + " :Cannot join channel (+l) - channel is full");
-				else if (channel->is_user_banned(client)) // test ban
+				else if (channel->is_user_banned(client))
 					client.send_request(ERR_BANNEDFROMCHAN, it->first + " :Cannot join channel (+b) - banned from channel");
 				else
 					channel->add_user(client);
 			}
 			else
 			{
-				if (client.is_op() && it->first[0] == '#')
+				if (client.is_op() && (it->first[0] == '#' || it->first[0] == '&'))
 				{
 					Channel channel(it->first, it->second);
 					channel.toggle_mode(CHAN_MODE_TOPIC, true);
 					channel.toggle_mode(CHAN_MODE_NO_EXTERNAL_MSG, true);
 					
 					server.add_channel(channel);
-					server.get_channels().back().add_user(client); // todo set user op on channel
+					server.get_channels().back().add_user(client);
 					server.get_channels().back().set_user_op(client, true);
 				}
 				else

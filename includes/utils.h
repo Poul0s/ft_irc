@@ -1,23 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   commands.h                                         :+:      :+:    :+:   */
+/*   utils.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/21 09:55:04 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/24 10:51:08 by psalame          ###   ########.fr       */
+/*   Created: 2024/05/24 10:22:07 by psalame           #+#    #+#             */
+/*   Updated: 2024/05/24 10:22:18 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef COMMANDS_H
-# define COMMANDS_H
-# include "Server.hpp"
+#ifndef UTILS_H
+# define UTILS_H
 
-void	JoinChannel(Client &client, Server &server, std::string &params);
-void	SendMsg(Client &client, Server &server, std::string &params);
-void	Topic(Client &client, Server &server, std::string &params);
-void	List(Client &client, Server &server, std::string &params);
-void	Kick(Client &client, Server &server, std::string &params);
+# include <list>
+# include <string>
+
+std::list<std::string>	ft_split(std::string str, char sep);
 
 #endif

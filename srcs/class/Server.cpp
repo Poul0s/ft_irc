@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 18:42:44 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 10:50:57 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,8 @@ void	Server::process_command(Client &client, std::string &req)
 		Topic(client, *this, params);
 	else if (command == "LIST")
 		List(client, *this, params);
+	else if (command == "KICK")
+		Kick(client, *this, params);
 	else if (command == "QUIT")
 		;
 }

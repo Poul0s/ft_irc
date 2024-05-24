@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 14:06:39 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 16:20:40 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 07:33:38 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	SendMsg(Client &client, Server &server, std::string &params)
 	{
 		std::string	destination = destinations.substr(0, destinations.find(','));
 		destinations = destinations.substr(std::min(destinations.find(','), destinations.size()));
-		if (destination[0] == '#')
+		if (destination[0] == '#' || destination[0] == '&')
 			SendChannelMsg(client, server, destination, message);
 		else
 			SendUserMsg(client, server, destination, message);

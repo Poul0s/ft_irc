@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 18:27:54 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 18:37:17 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 10:23:27 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,10 @@
 #include "Client.hpp"
 #include "Channel.hpp"
 #include "irc_error_codes.h"
+#include "utils.h"
 #include <sstream>
 #include <list>
 #include <algorithm>
-
-static std::list<std::string>	ft_split(std::string str, char sep)
-{
-	std::list<std::string>	result;
-	std::string				tmp;
-
-	for (std::string::iterator it = str.begin(); it != str.end(); it++)
-	{
-		if (*it == sep)
-		{
-			result.push_back(tmp);
-			tmp.clear();
-		}
-		else
-			tmp += *it;
-	}
-	if (!tmp.empty())
-		result.push_back(tmp);
-	return (result);
-
-}
 
 void	List(Client &client, Server &server, std::string &params)
 {
