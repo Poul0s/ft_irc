@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/24 15:29:15 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 16:02:07 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ void	Server::process_request(Client &client, std::string &req)
 		case SET_PASS:
 			if (req.rfind("PASS", 0) == 0)
 			{
-				if (req == "PASS " + this->_password + "")
+				if (req == "PASS " + this->_password || req == "PASS :" + this->_password)
 					client.set_status(SET_NICK);
 				else
 					client.disconnect("bad password");
