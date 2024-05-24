@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:08:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 11:51:31 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 14:51:12 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ enum e_status
 	SET_PASS,
 	SET_NICK,
 	SET_USER,
-	IDENTIFIED
+	IDENTIFIED,
+	DISCONNECTED
 };
 
 class	Server;

@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/24 14:43:59 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 15:09:48 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,8 +109,10 @@ void	Server::clean_clients()
 	{
 		if (it->get_fd() == -1)
 		{
+			std::cout << "Cleaning client " << it->get_nickname() << std::endl;
+			for (std::list<Channel>::iterator it_chan = this->_channels.begin(); it_chan != this->_channels.end(); it_chan++)
+				it_chan->remove_user(*it);
 			it = this->_clients.erase(it);
-			// todo remove from all channels
 		}
 		else
 			it++;
@@ -140,12 +142,14 @@ void	Server::process_command(Client &client, std::string &req)
 	else if (command == "NICK")
 		Nick(client, *this, params);
 	else if (command == "QUIT")
+		Quit(client, *this, params);
+	else if (command == "QUIT")
 		;
 }
 
 void	Server::process_request(Client &client, std::string &req)
 {
-	if (client.get_fd() == -1)
+	if (client.get_fd() == -1 || client.get_status() == DISCONNECTED)
 		return ;
 	switch (client.get_status())
 	{
@@ -213,6 +217,8 @@ void	Server::read_client_input(Client &client)
 		nb_read = recv(client.get_fd(), buffer, 1023, MSG_DONTWAIT);
 		if ((nb_read == -1 && errno != EAGAIN) || nb_read == 0)
 		{
+			if (client.get_status() == IDENTIFIED)
+				this->broadcast(":" + client.get_nickname() + "!" + client.get_username() + "@" + client.get_ip() + " QUIT :user disconnected with no reason");
 			client.disconnect("user disconnected");
 			return ;
 		}
@@ -276,7 +282,11 @@ void	Server::runtime()
 			if (revents && revents & POLLOUT)
 				std::cout << "for who ???" << std::endl;
 			if (revents && revents & ~(POLLIN | POLLOUT))
+			{
+				if (it->get_status() == IDENTIFIED)
+					this->broadcast(":" + it->get_nickname() + "!" + it->get_username() + "@" + it->get_ip() + " QUIT :user disconnected");
 				it->disconnect("user disconnected");
+			}
 		}
 		this->clean_clients();
 	}

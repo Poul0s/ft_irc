@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:40:44 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/23 11:51:44 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 14:52:47 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,7 @@ void	Client::disconnect(std::string reason)
 	std::cout << "Disconnecting client " << this->_nickname << " for " << reason << std::endl;
 	if (this->_fd != -1)
 		close(this->_fd);
+	this->_status = DISCONNECTED;
 	this->_fd = -1;
 }
 
