@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 09:55:04 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/24 14:54:20 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 15:28:31 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,6 @@ void	Kick(Client &client, Server &server, std::string &params);
 void	Oper(Client &client, Server &server, std::string &params);
 void	Nick(Client &client, Server &server, std::string &params);
 void	Quit(Client &client, Server &server, std::string &params);
+void	Part(Client &client, Server &server, std::string &params);
 
 #endif

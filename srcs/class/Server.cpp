@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/24 15:09:48 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/24 15:29:15 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,8 +143,8 @@ void	Server::process_command(Client &client, std::string &req)
 		Nick(client, *this, params);
 	else if (command == "QUIT")
 		Quit(client, *this, params);
-	else if (command == "QUIT")
-		;
+	else if (command == "PART")
+		Part(client, *this, params);
 }
 
 void	Server::process_request(Client &client, std::string &req)
