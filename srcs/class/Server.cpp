@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 18:42:34 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/24 16:02:07 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/27 18:23:54 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	Server::create_socket()
 	if (setsockopt(this->_sockfd, SOL_SOCKET, sock_flags, &opt, sizeof(opt)))
 		throw std::runtime_error("Error: setsockopt failed");
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = inet_addr(this->_ip.c_str());
+	addr.sin_addr.s_addr = INADDR_ANY; //inet_addr(this->_ip.c_str());
 	addr.sin_port = htons(this->_port);
 	if (bind(this->_sockfd, (struct sockaddr *)&addr, sizeof(addr)))
 		throw std::runtime_error("Error: bind failed");
