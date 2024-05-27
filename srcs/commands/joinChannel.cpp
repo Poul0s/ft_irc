@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 09:52:29 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/27 17:23:27 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/27 17:49:59 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,37 @@
 #include "irc_error_codes.h"
 
 typedef std::pair<std::string, std::string> channelData_t;
+
+static void	leaveAllChannels(Client &client, Server &server)
+{
+	bool	leavedChannel = false;
+	std::list<Channel>					&channels = server.get_channels();
+	for (std::list<Channel>::iterator it = channels.begin(); it != channels.end(); it++)
+	{
+		if (it->is_user_in(client))
+		{
+			leavedChannel = true;
+			std::string	request = ":" + client.get_nickname() + "!" + client.get_username() + "@" + client.get_ip() + " PART " + it->get_name();
+			it->broadcast(request);
+			it->remove_user(client);
+		}
+	}
+	if (!leavedChannel)
+		client.send_request(ERR_NOSUCHCHANNEL, "0 :No such channel");
+}
+
+static void	JoinChannel(Client &client, Channel &channel, std::string &password)
+{
+	// todo check private and invite only channel
+	if (channel.is_user_banned(client))
+		client.send_request(ERR_BANNEDFROMCHAN, channel.get_name() + " :Cannot join channel (+b) - banned from channel");
+	else if (channel.is_full())
+		client.send_request(ERR_CHANNELISFULL, channel.get_name() + " :Cannot join channel (+l) - channel is full");
+	else if (channel.get_password() != password)
+		client.send_request(ERR_BADCHANNELKEY, channel.get_name() + " :Cannot join channel (+k) - bad key");
+	else
+		channel.add_user(client);
+}
 
 void	JoinChannel(Client &client, Server &server, std::string &params)
 {
@@ -34,12 +65,13 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 		channelData_t	ChannelData;
 		ChannelData.first = channelsNameStr.substr(0, channelsNameStr.find(','));
 		if (channelsNameStr.find(',') != std::string::npos)
-			channelsNameStr.substr(channelsNameStr.find(',') + 1);
+			channelsNameStr = channelsNameStr.substr(channelsNameStr.find(',') + 1);
 		else
 			channelsNameStr = "";
+
 		ChannelData.second = channelsPasswordStr.substr(0, channelsPasswordStr.find(','));
 		if (channelsPasswordStr.find(',') != std::string::npos)
-			channelsPasswordStr.substr(channelsPasswordStr.find(',') + 1);
+			channelsPasswordStr = channelsPasswordStr.substr(channelsPasswordStr.find(',') + 1);
 		else
 			channelsPasswordStr = "";
 
@@ -49,24 +81,13 @@ void	JoinChannel(Client &client, Server &server, std::string &params)
 	for (std::list<channelData_t>::iterator it = ChannelsData.begin(); it != ChannelsData.end(); it++)
 	{
 		if (it->first == "0")
-		{
-			// todo leave channels
-		}
+			leaveAllChannels(client, server);
 		else
 		{
 			std::list<Channel>					&channels = server.get_channels();
 			std::list<Channel>::iterator	channel = std::find(channels.begin(), channels.end(), it->first);
 			if (channel != channels.end())
-			{
-				if (channel->is_user_banned(client))
-					client.send_request(ERR_BANNEDFROMCHAN, it->first + " :Cannot join channel (+b) - banned from channel");
-				else if (channel->is_full())
-					client.send_request(ERR_CHANNELISFULL, it->first + " :Cannot join channel (+l) - channel is full");
-				else if (channel->get_password() != it->second)
-					client.send_request(ERR_BADCHANNELKEY, it->first + " :Cannot join channel (+k) - bad key");
-				else
-					channel->add_user(client);
-			}
+				JoinChannel(client, *channel, it->second);
 			else
 			{
 				if (client.is_op() && (it->first[0] == '#' || it->first[0] == '&'))

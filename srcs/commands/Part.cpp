@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 15:30:28 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/27 17:06:11 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/27 17:40:28 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 #include "utils.h"
 #include <string>
 #include <algorithm>
-
-// void	RemoveFromChannel(Client &client, )
 
 void	Part(Client &client, Server &server, std::string &params)
 {
