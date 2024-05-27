@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 14:04:32 by psalame           #+#    #+#             */
-/*   Updated: 2024/05/27 17:13:20 by psalame          ###   ########.fr       */
+/*   Updated: 2024/05/27 17:28:45 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,14 @@ void	Oper(Client &client, Server &server, std::string &params)
 	}
 	std::string	operName = params.substr(0, params.find(' '));
 	std::string	operPassword = params.substr(params.find(' ') + 1);
+	std::cout << "operName: " << operName << std::endl;
+	std::cout << "operPassword: " << operPassword << std::endl;
 	if (operName.empty() || operPassword.empty())
 	{
 		client.send_request(ERR_NEEDMOREPARAMS, "OPER :Not enough parameters");
 		return ;
 	}
-	if (operName != "admin" && operPassword != "admin") // todo fix: if any of these is correct but the other one is not, still work
+	if (operName != "admin" || operPassword != "admin")
 	{
 		client.send_request(ERR_PASSWDMISMATCH, "OPER :Password incorrect");
 		return ;
