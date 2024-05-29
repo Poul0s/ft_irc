@@ -142,7 +142,10 @@ void	Client::disconnect(std::string reason)
 {
 	std::cout << "Disconnecting client " << this->_nickname << " for " << reason << std::endl;
 	if (this->_fd != -1)
+	{
+		this->send_request("You have been kicked from server for " + reason + ".");
 		close(this->_fd);
+	}
 	this->_status = DISCONNECTED;
 	this->_fd = -1;
 }

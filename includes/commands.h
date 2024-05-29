@@ -14,6 +14,8 @@
 # define COMMANDS_H
 # include "Server.hpp"
 
+typedef	void (*t_command)(Client &, Server &, std::string &);
+
 void	JoinChannel(Client &client, Server &server, std::string &params);
 void	SendMsg(Client &client, Server &server, std::string &params);
 void	Topic(Client &client, Server &server, std::string &params);
@@ -23,5 +25,6 @@ void	Oper(Client &client, Server &server, std::string &params);
 void	Nick(Client &client, Server &server, std::string &params);
 void	Quit(Client &client, Server &server, std::string &params);
 void	Part(Client &client, Server &server, std::string &params);
+void	Kill(Client &client, Server &server, std::string &params);
 
 #endif

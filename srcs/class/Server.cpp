@@ -13,6 +13,7 @@
 #include "Server.hpp"
 #include "commands.h"
 #include <algorithm>
+#include "irc_error_codes.h"
 
 
 Server::Server()
@@ -22,9 +23,13 @@ Server::Server()
 
 Server::~Server()
 {
-	// disconnect all clients
+	std::cout << "Closing server..." << std::endl;
+	for (std::list<Client>::iterator it = this->_clients.begin(); it != this->_clients.end(); it++)
+	{
+		it->disconnect("Closing server.");
+	}
 	if (this->_sockfd != -1)
-		close(this->_sockfd);
+		::close(this->_sockfd);
 }
 
 void	Server::set_ip(std::string ip)
@@ -123,7 +128,7 @@ void	Server::process_command(Client &client, std::string &req)
 {
 	std::cout << "Processing command: " << req << std::endl;
 	std::string	command = req.substr(0, req.find(' '));
-    std::transform(command.begin(), command.end(), command.begin(), &toupper);
+	std::transform(command.begin(), command.end(), command.begin(), &toupper);
 	std::string	params = req.substr(std::min(req.find_first_not_of(' ', std::min(req.find(' '), req.size())), req.size()));
 	
 	// maybe set a map with command as key and function as value
@@ -137,6 +142,8 @@ void	Server::process_command(Client &client, std::string &req)
 		List(client, *this, params);
 	else if (command == "KICK")
 		Kick(client, *this, params);
+	else if (command == "KILL")
+		Kill(client, *this, params);
 	else if (command == "OPER")
 		Oper(client, *this, params);
 	else if (command == "NICK")
@@ -260,10 +267,14 @@ void	Server::runtime()
 			fds[std::distance(this->_clients.begin(), it) + 1].events = POLL_FLAGS;
 		}
 		int nbAccess = poll(fds, this->_clients.size() + 1, 2147483647);
-		std::cout << "poll released for " << nbAccess << " fds." << std::endl;
 		if (nbAccess < 0)
+		{
+			if (errno == EINTR)
+				return ;
 			throw std::runtime_error("Error: poll failed: " + std::string(strerror(errno)));
-		else if (nbAccess == 0)
+		}
+		std::cout << "poll released for " << nbAccess << " fds." << std::endl;
+		if (nbAccess == 0)
 			continue ;
 		if (fds[0].revents)
 		{

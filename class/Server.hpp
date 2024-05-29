@@ -48,6 +48,7 @@ class	Server
 
 		void	create_socket();
 		void	runtime();
+		void	close();
 
 		void	add_channel(const Channel &channel);
 		void	broadcast(const std::string &request);

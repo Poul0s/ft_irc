@@ -14,6 +14,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <limits>
+#include <csignal>
 
 template<class T>
 bool	ft_atoi(char *str, T &res)
@@ -29,6 +30,10 @@ bool	ft_atoi(char *str, T &res)
 		return (false);
 	res = static_cast<int>(nb);
 	return (true);
+}
+
+void	empty_fct(__attribute__((unused)) int signal)
+{
 }
 
 int	main(int ac, char **av)
@@ -54,7 +59,10 @@ int	main(int ac, char **av)
 			sv.set_password(av[2]);
 			
 			sv.create_socket();
+			std::signal(SIGINT, &empty_fct);
+			std::signal(SIGQUIT, &empty_fct);
 			sv.runtime();
+
 		} catch (std::exception &err)
 		{
 			std::cerr << err.what() << std::endl;

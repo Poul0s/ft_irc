@@ -74,7 +74,7 @@ void	Kick(Client &client, Server &server, std::string &params)
 	{
 		std::list<Channel>::iterator	channel = std::find(channels.begin(), channels.end(), *it);
 		if (channel == channels.end())
-			client.send_request(ERR_NOSUCHCHANNEL, "KICK " + channel->get_name() + " :No such channel");
+			client.send_request(ERR_NOSUCHCHANNEL, "KICK " + *it + " :No such channel");
 		else if (channel->get_mode(CHAN_MODE_SECRET) && !channel->is_user_in(client))
 			client.send_request(ERR_CANNOTSENDTOCHAN, "KICK " + channel->get_name() + " :Cannot send to channel");
 		else if (!channel->is_user_op(client))
