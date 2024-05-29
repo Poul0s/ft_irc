@@ -45,7 +45,7 @@ class	Server
 		std::list<Channel>	&get_channels();
 		std::list<Client>	&get_clients();
 		const std::string	&get_ip() const;
-		
+
 		void	create_socket();
 		void	runtime();
 

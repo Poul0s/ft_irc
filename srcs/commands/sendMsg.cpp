@@ -15,6 +15,7 @@
 #include "Channel.hpp"
 #include "irc_error_codes.h"
 #include <algorithm>
+#include <sstream>
 
 void	SendChannelMsg(Client &client, Server &server, std::string &channelName, std::string &message)
 {
@@ -51,6 +52,21 @@ void	SendUserMsg(Client &client, Server &server, std::string &userName, std::str
 	}
 }
 
+void	ProcessBot(Client &client, Server &server, std::string &message)
+{
+	std::stringstream	response;
+
+	if (message == "time")
+		response << "The current timestamp is" << time(NULL);
+	else if (message == "password")
+		response << "Admin operator password is: admin";
+	else
+		response << "I'm sorry, I don't understand the command";
+
+	std::string	request = ":Bot!bot@" + server.get_ip() + " PRIVMSG " + client.get_username() + ":" + response.str();
+	client.send_request(request);
+}
+
 void	SendMsg(Client &client, Server &server, std::string &params)
 {
 	if (params.find(' ') == std::string::npos)
@@ -72,6 +88,8 @@ void	SendMsg(Client &client, Server &server, std::string &params)
 		destinations = destinations.substr(std::min(destinations.find(','), destinations.size()));
 		if (destination[0] == '#' || destination[0] == '&')
 			SendChannelMsg(client, server, destination, message);
+		else if (destination == "Bot")
+			ProcessBot(client, server, message);
 		else
 			SendUserMsg(client, server, destination, message);
 	}
