@@ -17,9 +17,9 @@
 #include "utils.h"
 #include <algorithm>
 
-static void	KickUsersFromChannel(Client &author, Server &server, Channel &channel, std::list<std::string> &kickedUserList, std::string &reason)
+static void	KickUsersFromChannel(Client &author, Server &server, Channel &channel, std::vector<std::string> &kickedUserList, std::string &reason)
 {
-	for (std::list<std::string>::iterator it = kickedUserList.begin(); it != kickedUserList.end(); it++)
+	for (std::vector<std::string>::iterator it = kickedUserList.begin(); it != kickedUserList.end(); it++)
 	{
 		std::list<Client>	&clients = server.get_clients();
 		std::list<Client>::iterator	client = std::find(clients.begin(), clients.end(), *it);
@@ -68,9 +68,9 @@ void	Kick(Client &client, Server &server, std::string &params)
 	std::string		reason = params.substr(std:: min(params.find(':'), params.size() - 1) + 1);
 
 	std::list<Channel>		&channels = server.get_channels();
-	std::list<std::string>	channelsNameList = ft_split(channelsName, ',');
-	std::list<std::string>	kickedUserList = ft_split(kickedUser, ',');
-	for (std::list<std::string>::iterator it = channelsNameList.begin(); it != channelsNameList.end(); it++)
+	std::vector<std::string>	channelsNameList = ft_split(channelsName, ',');
+	std::vector<std::string>	kickedUserList = ft_split(kickedUser, ',');
+	for (std::vector<std::string>::iterator it = channelsNameList.begin(); it != channelsNameList.end(); it++)
 	{
 		std::list<Channel>::iterator	channel = std::find(channels.begin(), channels.end(), *it);
 		if (channel == channels.end())

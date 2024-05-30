@@ -20,12 +20,14 @@
 
 typedef enum	e_channel_mode
 {
+	CHAN_OPER = 0, // o
 	CHAN_MODE_PRIVATE = 1, // p
 	CHAN_MODE_SECRET = 2, // s
 	CHAN_MODE_INVITE_ONLY = 4, // i
 	CHAN_MODE_TOPIC = 8, // t
 	CHAN_MODE_MODERATED = 16, // m
 	CHAN_MODE_NO_EXTERNAL_MSG = 32, // n
+	CHAN_MAX_USERS = 64, // l
 } t_channel_mode;
 
 class Client;

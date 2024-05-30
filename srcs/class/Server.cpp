@@ -152,6 +152,8 @@ void	Server::process_command(Client &client, std::string &req)
 		Quit(client, *this, params);
 	else if (command == "PART")
 		Part(client, *this, params);
+	else if (command == "MODE")
+		Mode(client, *this, params);
 }
 
 void	Server::process_request(Client &client, std::string &req)

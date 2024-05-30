@@ -13,9 +13,9 @@
 #ifndef UTILS_H
 # define UTILS_H
 
-# include <list>
+# include <vector>
 # include <string>
 
-std::list<std::string>	ft_split(std::string str, char sep);
+std::vector<std::string>	ft_split(std::string str, char sep);
 
 #endif

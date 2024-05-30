@@ -21,7 +21,7 @@
 
 void	List(Client &client, Server &server, std::string &params)
 {
-	std::list<std::string>	arguments = ft_split(params, ' ');
+	std::vector<std::string>	arguments = ft_split(params, ' ');
 
 	client.send_request(RPL_LISTSTART, "Channel :Users Name");
 	for (std::list<Channel>::iterator it = server.get_channels().begin(); it != server.get_channels().end(); it++)

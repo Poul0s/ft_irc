@@ -10,12 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <list>
+#include <vector>
 #include <string>
 
-std::list<std::string>	ft_split(std::string str, char sep)
+std::vector<std::string>	ft_split(std::string str, char sep)
 {
-	std::list<std::string>	result;
+	std::vector<std::string>	result;
 	std::string				tmp;
 
 	for (std::string::iterator it = str.begin(); it != str.end(); it++)

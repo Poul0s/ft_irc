@@ -21,7 +21,7 @@
 void	Part(Client &client, Server &server, std::string &params)
 {
 	params = params.substr(0, std::min(params.find(' '), params.size()));
-	std::list<std::string>	arguments = ft_split(params, ',');
+	std::vector<std::string>	arguments = ft_split(params, ',');
 	if (arguments.size() == 0)
 	{
 		client.send_request(ERR_NEEDMOREPARAMS, "PART :Not enough parameters");
@@ -29,7 +29,7 @@ void	Part(Client &client, Server &server, std::string &params)
 	}
 
 	std::list<Channel>	&channels = server.get_channels();
-	for (std::list<std::string>::iterator it = arguments.begin(); it != arguments.end(); it++)
+	for (std::vector<std::string>::iterator it = arguments.begin(); it != arguments.end(); it++)
 	{
 		std::list<Channel>::iterator	channel = std::find(channels.begin(), channels.end(), *it);
 		if (channel == channels.end())
