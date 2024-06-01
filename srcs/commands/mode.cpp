@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ycontre <ycontre@student.42.fr>            +#+  +:+       +#+        */
+/*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 17:13:38 by ycontre           #+#    #+#             */
-/*   Updated: 2024/05/30 19:03:49 by ycontre          ###   ########.fr       */
+/*   Updated: 2024/06/01 15:13:09 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	Mode(Client &client, Server &server, std::string &params)
 		{client.send_request(ERR_NOSUCHCHANNEL, "MODE :No such channels."); return;}
 
 	if (args.size() == 1)
-		return ; //todo
+		return ; //todo send user channels mode
 
 	if (args[1][0] != '+' && args[1][0] != '-')
 		{client.send_request(ERR_NEEDMOREPARAMS, "MODE :Missing toggle token."); return;}
@@ -64,4 +64,5 @@ void	Mode(Client &client, Server &server, std::string &params)
 			return ; //todo
 		channel->toggle_mode((t_channel_mode) mode, toggle);
 	}
+	// todo send users in server new channel mode (or only in channel if channel secret mode is active)
 }
