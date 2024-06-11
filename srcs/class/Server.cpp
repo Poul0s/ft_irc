@@ -312,7 +312,7 @@ void	Server::add_channel(const Channel &channel)
 	if (!channel.get_mode(CHAN_MODE_SECRET))
 	{
 		std::string	request;
-		request = ":" + this->_ip + " MODE " + channel.get_name() + " +" + Channel::mode_to_str(channel.get_mode());
+		request = ":" + this->_ip + " MODE " + channel.get_name() + " +" + Channel::mode_to_str(channel.get_mode(), channel.get_limit());
 		this->broadcast(request);
 	}
 }

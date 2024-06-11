@@ -58,8 +58,9 @@ class Channel
 
 		int					get_mode(void) const;
 		bool				get_mode(t_channel_mode mode) const;
+		int					get_limit(void) const;
 		const std::string	&get_topic(void) const;
-		static std::string	mode_to_str(int mode);
+		static std::string	mode_to_str(int mode, int limit);
 		const std::string	&get_name() const;
 		const std::string	&get_password() const;
 		int					get_nb_users(void) const;

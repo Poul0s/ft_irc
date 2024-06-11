@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 
 std::vector<std::string>	ft_split(std::string str, char sep)
 {
@@ -31,4 +32,16 @@ std::vector<std::string>	ft_split(std::string str, char sep)
 	if (!tmp.empty())
 		result.push_back(tmp);
 	return (result);
+}
+
+std::string	ft_itoa(int code)
+{
+	std::string	res;
+	do
+	{
+		res += (code % 10 + '0');
+		code /= 10;
+	} while (code != 0);
+	std::reverse(res.begin(), res.end()); // reversing itostr to set code in order
+	return (res);
 }

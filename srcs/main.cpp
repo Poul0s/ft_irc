@@ -15,22 +15,7 @@
 #include <cstdlib>
 #include <limits>
 #include <csignal>
-
-template<class T>
-bool	ft_atoi(char *str, T &res)
-{
-	char	*endptr;
-	long	nb;
-
-	if (*str == '\0')
-		return (false);
-	errno = 0;
-	nb = std::strtol(str, &endptr, 10);
-	if (*endptr != '\0' || errno == ERANGE || nb < std::numeric_limits<T>::min() || nb > std::numeric_limits<T>::max())
-		return (false);
-	res = static_cast<int>(nb);
-	return (true);
-}
+#include "utils.h"
 
 void	empty_fct(__attribute__((unused)) int signal)
 {

@@ -16,6 +16,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <algorithm>
+#include <utils.h>
 
 Client::Client(const Server &attachedServer) : _attachedServer(attachedServer)
 {
@@ -124,17 +125,8 @@ void		Client::send_request(std::string request) const
 void		Client::send_request(int code, std::string data) const
 {
 	std::string	request;
-	// request = ":" + server_ip + " " + code + " " + nickname + " " + data;
 
-	do
-	{
-		request += (code % 10 + '0');
-		code /= 10;
-	} while (code != 0);
-	std::reverse(request.begin(), request.end()); // reversing itostr to set code in order
-
-	request = ":" + this->_attachedServer.get_ip() + " " + request + " " + this->_nickname + " " + data;
-
+	request = ":" + this->_attachedServer.get_ip() + " " + ft_itoa(code) + " " + this->_nickname + " " + data;
 	this->send_request(request);
 }
 

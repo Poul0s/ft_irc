@@ -13,6 +13,7 @@
 #include "Channel.hpp"
 #include "irc_error_codes.h"
 #include <algorithm>
+#include "utils.h"
 
 typedef std::pair<Client *, bool> userIn_t;
 
@@ -158,14 +159,20 @@ bool	Channel::get_mode(t_channel_mode mode) const
 	return (this->_mode & mode);
 }
 
+int	Channel::get_limit(void) const
+{
+	return (this->_limit);
+}
+
 const std::string	&Channel::get_topic(void) const
 {
 	return this->_topic;
 }
 
-std::string	Channel::mode_to_str(int mode)
+std::string	Channel::mode_to_str(int mode, int limit)
 {
 	std::string	res;
+
 	if (mode & CHAN_MODE_PRIVATE)
 		res += "p";
 	if (mode & CHAN_MODE_SECRET)
@@ -178,6 +185,8 @@ std::string	Channel::mode_to_str(int mode)
 		res += "m";
 	if (mode & CHAN_MODE_NO_EXTERNAL_MSG)
 		res += "n";
+	if (limit >= 0)
+		res += "l " + ft_itoa(limit);
 	return res;
 }
 
