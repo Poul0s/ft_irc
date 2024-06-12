@@ -206,7 +206,6 @@ void	Server::process_request(Client &client, std::string &req)
 				client.set_realname(realname);
 				client.set_status(IDENTIFIED);
 				std::cout << "New client : " << std::endl << "-IP: " << client.get_ip() << std::endl << "-Nick: " << client.get_nickname() << std::endl << "-User: " << client.get_username() << std::endl << "-Realname: " << client.get_realname() << std::endl;
-				// todo maybe send all channels mode
 			}
 			break;
 		default:

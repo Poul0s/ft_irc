@@ -228,6 +228,7 @@ void	Channel::add_user(Client &client)
 		if (*(it->first) == client.get_nickname())
 			return ;
 
+	this->remove_invitation(client.get_nickname());
 	this->_usersIn.push_back(userIn_t(&client, false));
 	
 	std::string	request = ":" + client.get_nickname() + "!" + client.get_username() + "@" + client.get_ip();
@@ -258,6 +259,22 @@ void	Channel::remove_user(Client &user)
 		}
 		it++;
 	}
+}
+
+
+void	Channel::add_invitation(const std::string &nickname)
+{
+	this->_invitations.insert(nickname);
+}
+
+bool	Channel::is_invited(const std::string &nickname) const
+{
+	return (this->_invitations.find(nickname) != this->_invitations.end());
+}
+
+void	Channel::remove_invitation(const std::string &nickname)
+{
+	this->_invitations.erase(nickname);
 }
 
 void	Channel::broadcast(const std::string &request, Client &sender)

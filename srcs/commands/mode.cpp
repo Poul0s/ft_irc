@@ -6,7 +6,7 @@
 /*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 17:13:38 by ycontre           #+#    #+#             */
-/*   Updated: 2024/06/11 16:46:14 by psalame          ###   ########.fr       */
+/*   Updated: 2024/06/12 10:52:47 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@
 
 int		parse_mode(char c)
 {
-	std::string modes = "opsitmnl";
+	std::string		modes = "opsitmnl";
 	std::size_t		pos;
 
 	pos = modes.find(c);
 	if (pos == std::string::npos)
 		return (-1);
-	return (std::pow(pos, 2));
+	return (std::pow(2, static_cast<int>(pos) - 1));
 }
 
 static void	oper_chan_user(Client &author, Channel &channel, bool toggle, std::vector<std::string> &args)
@@ -36,8 +36,7 @@ static void	oper_chan_user(Client &author, Channel &channel, bool toggle, std::v
 	i = args[1].find('l') == std::string::npos ? 2 : 3;
 	if (args.size() <= i)
 		author.send_request(ERR_NEEDMOREPARAMS, "MODE :Missing user param for mode 'o'.");
-	throw std::runtime_error("TODO");
-	if (channel.is_user_in(args[i]))
+	else if (!channel.is_user_in(args[i]))
 		author.send_request(ERR_NOTONCHANNEL, "MODE :Target not in channel.");
 	else
 		channel.set_user_op(args[i], toggle);
@@ -47,7 +46,7 @@ static void	toggle_chan_limit(Client &author, Channel &channel, bool toggle, std
 {
 	if (toggle && args.size() < 3)
 		author.send_request(ERR_NEEDMOREPARAMS, "MODE :Missing limit param for mode 'l'.");
-	if (!toggle)
+	else if (!toggle)
 		channel.set_limit(-1);
 	else
 	{
@@ -82,7 +81,10 @@ void	Mode(Client &client, Server &server, std::string &params)
 	}
 
 	if (args.size() == 1)
-		client.send_request(RPL_CHANNELMODEIS, args[0] + Channel::mode_to_str(channel->get_mode(), channel->get_limit()));
+	{
+		client.send_request(RPL_CHANNELMODEIS, args[0] + " " + Channel::mode_to_str(channel->get_mode(), channel->get_limit()));
+		return ;
+	}
 
 	if (args[1][0] != '+' && args[1][0] != '-')
 	{
@@ -91,7 +93,7 @@ void	Mode(Client &client, Server &server, std::string &params)
 	}
 
 	toggle = (args[1][0] == '+');
-
+	
 	for (std::size_t i = 1; i < args[1].size(); i++)
 	{
 		mode = parse_mode(args[1][i]);
@@ -107,5 +109,10 @@ void	Mode(Client &client, Server &server, std::string &params)
 		else
 			channel->toggle_mode((t_channel_mode) mode, toggle);
 	}
-	// todo send users in server new channel mode (or only in channel if channel secret mode is active)
+	
+	std::string request = ":" + server.get_ip() + " MODE " + channel->get_name() + " +" + Channel::mode_to_str(channel->get_mode(), channel->get_limit());
+	if (channel->get_mode(CHAN_MODE_SECRET))
+		channel->broadcast(request);
+	else
+		server.broadcast(request);
 }

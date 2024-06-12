@@ -36,9 +36,10 @@ static void	leaveAllChannels(Client &client, Server &server)
 
 static void	JoinChannel(Client &client, Channel &channel, std::string &password)
 {
-	// todo check invite only channel
 	if (channel.is_user_banned(client))
 		client.send_request(ERR_BANNEDFROMCHAN, channel.get_name() + " :Cannot join channel (+b) - banned from channel");
+	else if (channel.get_mode(CHAN_MODE_INVITE_ONLY) && !channel.is_invited(client.get_nickname()))
+		client.send_request(ERR_INVITEONLYCHAN, channel.get_name() + " :You're not invited on this  channel.");
 	else if (channel.get_mode(CHAN_MODE_PRIVATE))
 		client.send_request(ERR_BADCHANNELKEY,  channel.get_name() + " :Cannot join channel (+p) - channel is private");
 	else if (channel.is_full())

@@ -67,6 +67,9 @@ class Channel
 
 		void	add_user(Client &user);
 		void	remove_user(Client &user);
+		void	add_invitation(const std::string &nickname);
+		bool	is_invited(const std::string &nickname) const;
+		void	remove_invitation(const std::string &nickname);
 		void	broadcast(const std::string &request, Client &sender);
 		void	broadcast(const std::string &request);
 
@@ -79,6 +82,7 @@ class Channel
 		int			_mode;
 
 		std::list<std::pair<Client *, bool> >	_usersIn; // first: client, second: isChanOperator
+		std::set<std::string>					_invitations;
 		std::set<std::string>					_bannedUsers;
 
 		const std::string	get_channel_names(void) const;
