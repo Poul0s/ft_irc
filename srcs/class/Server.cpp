@@ -154,6 +154,8 @@ void	Server::process_command(Client &client, std::string &req)
 		Part(client, *this, params);
 	else if (command == "MODE")
 		Mode(client, *this, params);
+	else if (command == "INVITE")
+		Invite(client, *this, params);
 }
 
 void	Server::process_request(Client &client, std::string &req)

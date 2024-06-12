@@ -27,5 +27,6 @@ void	Quit(Client &client, Server &server, std::string &params);
 void	Part(Client &client, Server &server, std::string &params);
 void	Kill(Client &client, Server &server, std::string &params);
 void	Mode(Client &client, Server &server, std::string &params);
+void	Invite(Client &client, Server &server, std::string &params);
 
 #endif

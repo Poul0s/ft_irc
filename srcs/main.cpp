@@ -17,9 +17,7 @@
 #include <csignal>
 #include "utils.h"
 
-void	empty_fct(__attribute__((unused)) int signal)
-{
-}
+void	empty_fct(__attribute__((unused)) int signal) {}
 
 int	main(int ac, char **av)
 {

@@ -52,18 +52,87 @@ void	SendUserMsg(Client &client, Server &server, std::string &userName, std::str
 	}
 }
 
+#include <sys/wait.h>
+
+std::string err(std::string s)
+{
+	std::cout << s << std::endl;
+	return s;
+}
+
+std::string    curlRequest(char    *av[]) {
+    int            status;
+    int            fd[2], fderr[2];
+    char        buf[1024] = {0};
+    std::string    res;
+    char    *env[] = {
+        (char *) 0
+    };
+
+    if (pipe(fd) == -1 || pipe(fderr) == -1)
+        return err("error: fatal\n");
+    
+    int pid = fork();
+    if (!pid) {
+        if (dup2(fd[1], 1) == -1 || close(fd[0]) == -1 || close(fd[1]) == -1
+            || dup2(fderr[1], 2) == -1 || close(fderr[0]) == -1 || close(fderr[1]) == -1)
+            return err("error: fatal\n");
+        execve(av[0], av, env);
+        err("error: cannot execute " + std::string(av[0]) + "\n");
+        exit(1);
+    } else {
+        waitpid(pid, &status, 0);
+        close(fd[1]);
+        close(fderr[1]);
+        while (read(fd[0], buf, 1024) > 0)
+            res += buf;
+        close(fd[0]);
+        while (read(fderr[0], buf, 1024) > 0)
+            ;
+        close(fderr[0]);
+        return res;
+    }
+    return res;
+}
+
+char verifyn(char c)
+{
+	if (c == '\n')
+		c = ' ';
+	return c;
+}
+
 void	ProcessBot(Client &client, Server &server, std::string &message)
 {
-	std::stringstream	response;
+	std::string re = "{ \
+			\"model\": \"gpt-3.5-turbo\", \
+			\"messages\": [ \
+			{ \
+				\"role\": \"system\", \
+				\"content\": \"You are a helpful assistant.\" \
+			}, \
+			{ \
+				\"role\": \"user\", \
+				\"content\": \"" + message + "\" \
+			} \
+			] \
+		}";
+	char *gpt[] = {
+		(char *) "/bin/curl",
+		(char *) "https://api.openai.com/v1/chat/completions",
+		(char *) "-H", (char *) "Content-Type: application/json",
+		(char *) "-H", (char *) "Authorization: Bearer sk-proj-m0cJ7UL5RcHqoAUDJ0BoT3BlbkFJlVahT9dx213Tf2QTmHGn",
+		(char *) "-d", (char *) re.c_str(),
+		(char *) 0
+	};
+	std::string response = curlRequest(gpt);
 
-	if (message == "time")
-		response << "The current timestamp is" << time(NULL);
-	else if (message == "password")
-		response << "Admin operator password is: admin";
-	else
-		response << "I'm sorry, I don't understand the command";
+	response = response.substr(response.find("content") + 11);
+	response = response.substr(0, response.find("\""));
 
-	std::string	request = ":Bot!bot@" + server.get_ip() + " PRIVMSG " + client.get_username() + ":" + response.str();
+	std::transform(response.begin(), response.end(), response.begin(), &verifyn);
+
+	std::string	request = ":Bot!bot@" + server.get_ip() + " PRIVMSG " + client.get_username() + " :" + response;
 	client.send_request(request);
 }
 
