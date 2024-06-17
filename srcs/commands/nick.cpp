@@ -16,41 +16,55 @@
 #include "irc_error_codes.h"
 #include <iostream>
 #include <algorithm>
+#include "utils.h"
 
 void	Nick(Client &client, Server &server, std::string &params)
 {
 	if (client.get_status() == SET_ID)
 		std::cout << "Nick" << ":" << params << std::endl;
-	if (params.empty())
+	
+	std::vector<std::string> args = ft_split(params, ' ');
+	
+	if (args.size() == 0)
 	{
 		client.send_request(ERR_NONICKNAMEGIVEN, "NICK :No nickname given");
 		return ;
 	}
-	if (params.find_last_not_of(' ') != std::string::npos)
-		params = params.substr(0, params.find_last_not_of(' ') + 1);
-	if (params.size() > 9)
+	if (args.size() != 1)
+	{
+		client.send_request(ERR_ERRONEUSNICKNAME, "NICK :Nickname cannot have space.");
+		return ;
+	}
+	if (args[0].size() > 9)
 	{
 		client.send_request(ERR_ERRONEUSNICKNAME, "NICK :Invalid nickname size");
 		return ;
 	}
-	if (params == "anonymous")
+	if (args[0] == "anonymous")
 	{
 		client.send_request(ERR_ERRONEUSNICKNAME, "NICK :Invalid nickname");
 		return ;
 	}
 
 	std::list<Client>	&clients = server.get_clients();
-	std::list<Client>::iterator	clientIt = std::find(clients.begin(), clients.end(), params);
+	std::list<Client>::iterator	clientIt = std::find(clients.begin(), clients.end(), args[0]);
 	if (clientIt != clients.end())
 	{
 		client.send_request(ERR_NICKNAMEINUSE, "NICK :Nickname is already in use");
+		if (client.get_failNickname().empty())
+			client.set_failNickname(args[0]);
 		return ;
 	}
 	
 	if (client.get_status() != SET_ID)
 	{
-		std::string	request = ":" + client.get_nickname() + "!" + client.get_username() + "@" + client.get_ip() + " NICK " + params;
+		std::string	request = ":" + client.get_nickname() + "!" + client.get_username() + "@" + client.get_ip() + " NICK " + args[0];
 		server.broadcast(request);
 	}
-	client.set_nickname(params);
+	else if (!client.get_failNickname().empty())
+	{
+		std::string	request = ":" + client.get_failNickname() + "!" + client.get_username() + "@" + client.get_ip() + " NICK " + args[0];
+		client.send_request(request);
+	}
+	client.set_nickname(args[0]);
 }

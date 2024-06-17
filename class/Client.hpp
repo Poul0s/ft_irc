@@ -38,6 +38,7 @@ class	Client {
 
 		void	set_ip(std::string ip);
 		void	set_nickname(std::string nickname);
+		void	set_failNickname(std::string nickname);
 		void	set_username(std::string username);
 		void	set_realname(std::string realname);
 
@@ -54,6 +55,8 @@ class	Client {
 		std::string	&get_ip(void);
 		std::string	&get_nickname(void);
 		const std::string	&get_nickname(void) const;
+		std::string	&get_failNickname(void);
+		const std::string	&get_failNickname(void) const;
 		std::string	&get_username(void);
 		std::string	&get_realname(void);
 
@@ -62,9 +65,11 @@ class	Client {
 
 		void		disconnect(std::string reason);
 
+
 	private:
 		std::string	_ip;
 		std::string	_nickname; // unique in server
+		std::string	_failNickname;
 		std::string	_username;
 		std::string	_realname;
 		std::string	_currentReq;

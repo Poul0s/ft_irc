@@ -43,6 +43,11 @@ void	Client::set_nickname(std::string nickname)
 	this->_nickname = nickname;
 }
 
+void	Client::set_failNickname(std::string nickname)
+{
+	this->_failNickname = nickname;
+}
+
 void	Client::set_username(std::string username)
 {
 	this->_username = username;
@@ -101,6 +106,16 @@ std::string	&Client::get_nickname(void)
 const std::string	&Client::get_nickname(void) const
 {
 	return this->_nickname;
+}
+
+std::string	&Client::get_failNickname(void)
+{
+	return this->_failNickname;
+}
+
+const std::string	&Client::get_failNickname(void) const
+{
+	return this->_failNickname;
 }
 
 std::string	&Client::get_username(void)
