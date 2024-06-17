@@ -21,8 +21,9 @@ enum e_status
 {
 	GET_FORMAT,
 	SET_PASS,
-	SET_NICK,
-	SET_USER,
+	SET_ID,
+	// SET_NICK,
+	// SET_USER,
 	IDENTIFIED,
 	DISCONNECTED
 };

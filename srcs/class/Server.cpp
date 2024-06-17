@@ -177,37 +177,42 @@ void	Server::process_request(Client &client, std::string &req)
 			if (req.rfind("PASS", 0) == 0)
 			{
 				if (req == "PASS " + this->_password || req == "PASS :" + this->_password)
-					client.set_status(SET_NICK);
+					client.set_status(SET_ID);
 				else
 					client.disconnect("bad password");
 			}
 			else
 				client.disconnect("bad request (asking PASS)");
 			break;
-		case SET_NICK:
+		case SET_ID:
 			if (req.rfind("NICK", 0) == 0)
 			{
 				req = req.substr(std::min(req.find_first_not_of(' ', 5), req.size()));
 				Nick(client, *this, req);
 			}
-			else
-				client.disconnect("bad request (asking NICK)");
-			break;
-		case SET_USER:
-			if (req.rfind("USER", 0) != 0)
-				client.disconnect("bad request (asking USER)");
-			else if (req.find_first_of(' ', 5) == std::string::npos || req.find_first_of(':') == std::string::npos)
-				client.disconnect("bad USER request format (asking USER user 0 * :realname)");
-			else
+			else if (req.rfind("USER", 0) == 0)
 			{
+				if (req.find_first_of(' ', 5) == std::string::npos || req.find_first_of(':') == std::string::npos)
+				{
+					client.send_request(ERR_NEEDMOREPARAMS, "USER :bad USER request format, (asking USER user 0 * :realname)");
+					break ;
+				}
 				std::string	user = req.substr(5, req.find_first_of(' ', 5) - 5);
 				std::string	realname = req.substr(req.find_first_of(':'), req.size() - 1);
 				if (user.size() > 15 || realname.size() > 15)
 					client.disconnect("invalid user size");
 				client.set_username(user);
 				client.set_realname(realname);
-				client.set_status(IDENTIFIED);
+			}
+			else
+			{
+				client.disconnect("bad request (asking NICK or USER)");
+				break ;
+			}
+			if (!client.get_nickname().empty() && !client.get_username().empty())
+			{
 				std::cout << "New client : " << std::endl << "-IP: " << client.get_ip() << std::endl << "-Nick: " << client.get_nickname() << std::endl << "-User: " << client.get_username() << std::endl << "-Realname: " << client.get_realname() << std::endl;
+				client.set_status(IDENTIFIED);
 			}
 			break;
 		default:
@@ -252,19 +257,22 @@ void	Server::read_client_input(Client &client)
 
 #define POLL_FLAGS POLLIN | POLLRDHUP | POLLERR | POLLHUP
 
+static void	reset_pollfd(struct pollfd *fds, size_t size, int server_sock)
+{
+	memset(fds, 0, size);
+	fds[0].fd = server_sock;
+	fds[0].events = POLL_FLAGS;
+}
+
 void	Server::runtime()
 {
 	struct pollfd	fds[NB_CLIENTS_MAX + 1];
-	memset(fds, 0, (NB_CLIENTS_MAX + 1) * sizeof(struct pollfd));
-	fds[0].fd = this->_sockfd;
-	fds[0].events = POLL_FLAGS;
-
 	std::cout << "Start listening" << std::endl;
-
 	while (this->_sockfd != -1)
 	{
 		std::list<Client>::iterator	end_client_poll = this->_clients.end();
-		for (std::list<Client>::iterator it = this->_clients.begin(); it != end_client_poll; it++)
+		reset_pollfd(fds, (NB_CLIENTS_MAX + 1) * sizeof(struct pollfd), this->_sockfd);
+		for (std::list<Client>::iterator it = this->_clients.begin(); it != end_client_poll; it++) // todo maybe set in reset_pollfd
 		{
 			fds[std::distance(this->_clients.begin(), it) + 1].fd = it->get_fd();
 			fds[std::distance(this->_clients.begin(), it) + 1].events = POLL_FLAGS;

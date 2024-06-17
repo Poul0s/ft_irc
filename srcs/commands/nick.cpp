@@ -19,7 +19,7 @@
 
 void	Nick(Client &client, Server &server, std::string &params)
 {
-	if (client.get_status() == SET_NICK)
+	if (client.get_status() == SET_ID)
 		std::cout << "Nick" << ":" << params << std::endl;
 	if (params.empty())
 	{
@@ -47,9 +47,7 @@ void	Nick(Client &client, Server &server, std::string &params)
 		return ;
 	}
 	
-	if (client.get_status() == SET_NICK)
-		client.set_status(SET_USER);
-	else
+	if (client.get_status() != SET_ID)
 	{
 		std::string	request = ":" + client.get_nickname() + "!" + client.get_username() + "@" + client.get_ip() + " NICK " + params;
 		server.broadcast(request);
