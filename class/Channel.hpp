@@ -28,6 +28,7 @@ typedef enum	e_channel_mode
 	CHAN_MODE_MODERATED = 16, // m
 	CHAN_MODE_NO_EXTERNAL_MSG = 32, // n
 	CHAN_MAX_USERS = 64, // l
+	CHAN_KEYWORD = 128 // k
 } t_channel_mode;
 
 class Client;
@@ -46,6 +47,7 @@ class Channel
 		void				set_topic(const std::string &topic);
 		void				set_user_op(const std::string &client, bool toggle);
 		void				set_user_op(const Client &client, bool toggle);
+		void				set_password(std::string password);
 		void				toggle_mode(t_channel_mode mode, bool toggle);
 
 		bool				is_full(void) const;

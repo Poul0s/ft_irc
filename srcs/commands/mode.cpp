@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ycontre <ycontre@student.42.fr>            +#+  +:+       +#+        */
+/*   By: psalame <psalame@student.42angouleme.fr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 17:13:38 by ycontre           #+#    #+#             */
-/*   Updated: 2024/06/12 15:21:40 by ycontre          ###   ########.fr       */
+/*   Updated: 2024/06/18 14:54:42 by psalame          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,13 @@
 
 int		parse_mode(char c)
 {
-	std::string		modes = "opsitmnl";
+	std::string		modes = "opsitmnlk";
 	std::size_t		pos;
 
 	pos = modes.find(c);
 	if (pos == std::string::npos)
 		return (-1);
 	return (std::pow(2, static_cast<int>(pos) - 1));
-}
-
-static void	oper_chan_user(Client &author, Channel &channel, bool toggle, std::vector<std::string> &args)
-{
-	std::size_t	i;
-
-	i = args[1].find('l') == std::string::npos ? 2 : 3;
-	if (args.size() <= i)
-		author.send_request(ERR_NEEDMOREPARAMS, "MODE :Missing user param for mode 'o'.");
-	else if (!channel.is_user_in(args[i]))
-		author.send_request(ERR_NOTONCHANNEL, "MODE :Target not in channel.");
-	else
-		channel.set_user_op(args[i], toggle);
 }
 
 static void	toggle_chan_limit(Client &author, Channel &channel, bool toggle, std::vector<std::string> &args)
@@ -55,6 +42,42 @@ static void	toggle_chan_limit(Client &author, Channel &channel, bool toggle, std
 			author.send_request(ERR_NEEDMOREPARAMS, "MODE :Bad argument for channel limit ('" + args[2] + "').");
 		else
 			channel.set_limit(nb);
+	}
+}
+
+static void	oper_chan_user(Client &author, Channel &channel, bool toggle, std::vector<std::string> &args)
+{
+	std::size_t	i;
+
+	i = args[1].find('l') == std::string::npos ? 2 : 3;
+	if (args.size() <= i)
+		author.send_request(ERR_NEEDMOREPARAMS, "MODE :Missing user param for mode 'o'.");
+	else if (!channel.is_user_in(args[i]))
+		author.send_request(ERR_NOTONCHANNEL, "MODE :Target not in channel.");
+	else
+		channel.set_user_op(args[i], toggle);
+}
+
+
+static void	set_chan_keyword(Client &author, Channel &channel, bool toggle, std::vector<std::string> &args)
+{
+	std::size_t	i;
+
+	if (!toggle)
+	{
+		channel.set_password("");
+	}
+	else
+	{
+		i = 2;
+		if (args[1].find('l') != std::string::npos)
+			i++;
+		if (args[1].find('o') != std::string::npos)
+			i++;
+		if (args.size() <= i)
+			author.send_request(ERR_NEEDMOREPARAMS, "MODE :Missing user param for mode 'k'.");
+		else
+			channel.set_password(args[i]);
 	}
 }
 
@@ -106,6 +129,8 @@ void	Mode(Client &client, Server &server, std::string &params)
 			oper_chan_user(client, *channel, toggle, args);
 		else if (mode == CHAN_MAX_USERS)
 			toggle_chan_limit(client, *channel, toggle, args);
+		else if (mode == CHAN_KEYWORD)
+			set_chan_keyword(client, *channel, toggle, args);
 		else
 			channel->toggle_mode((t_channel_mode) mode, toggle);
 	}

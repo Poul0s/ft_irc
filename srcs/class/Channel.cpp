@@ -96,6 +96,11 @@ void	Channel::set_user_op(const Client &client, bool toggle)
 	this->set_user_op(client.get_nickname(), toggle);
 }
 
+void	Channel::set_password(std::string password)
+{
+	this->_password = password;
+}
+
 void	Channel::toggle_mode(t_channel_mode mode, bool toggle)
 {
 	if (toggle)

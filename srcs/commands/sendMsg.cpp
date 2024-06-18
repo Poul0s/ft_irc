@@ -63,7 +63,7 @@ std::string err(std::string s)
 std::string    curlRequest(char    *av[]) {
     int            status;
     int            fd[2], fderr[2];
-    char        buf[1024] = {0};
+    char        buf[1025] = {0};
     std::string    res;
     char    *env[] = {
         (char *) 0
@@ -84,8 +84,12 @@ std::string    curlRequest(char    *av[]) {
         waitpid(pid, &status, 0);
         close(fd[1]);
         close(fderr[1]);
-        while (read(fd[0], buf, 1024) > 0)
+		size_t	readed;
+        while ((readed = read(fd[0], buf, 1024)) > 0)
+		{
+			buf[readed] = 0;
             res += buf;
+		}
         close(fd[0]);
         while (read(fderr[0], buf, 1024) > 0)
             ;
