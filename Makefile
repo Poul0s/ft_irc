@@ -12,7 +12,7 @@ OBJ_DIR	=	$(sort $(dir $(OBJ)))
 
 HEADER	=	-Iclass -Iincludes
 
-NAME	=	ft_irc
+NAME	=	ircserv
 
 all: $(NAME)
 
