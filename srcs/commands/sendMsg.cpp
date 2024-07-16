@@ -60,43 +60,43 @@ std::string err(std::string s)
 	return s;
 }
 
-std::string    curlRequest(char    *av[]) {
-    int            status;
-    int            fd[2], fderr[2];
-    char        buf[1025] = {0};
-    std::string    res;
-    char    *env[] = {
-        (char *) 0
-    };
+std::string	curlRequest(char *av[]) {
+	int			status;
+	int			fd[2], fderr[2];
+	char		buf[1025] = {0};
+	std::string		res;
+	char			*env[] = {
+		(char *) 0
+	};
 
-    if (pipe(fd) == -1 || pipe(fderr) == -1)
-        return err("error: fatal\n");
-    
-    int pid = fork();
-    if (!pid) {
-        if (dup2(fd[1], 1) == -1 || close(fd[0]) == -1 || close(fd[1]) == -1
-            || dup2(fderr[1], 2) == -1 || close(fderr[0]) == -1 || close(fderr[1]) == -1)
-            return err("error: fatal\n");
-        execve(av[0], av, env);
-        err("error: cannot execute " + std::string(av[0]) + "\n");
-        exit(1);
-    } else {
-        waitpid(pid, &status, 0);
-        close(fd[1]);
-        close(fderr[1]);
+	if (pipe(fd) == -1 || pipe(fderr) == -1)
+		return err("error: fatal\n");
+		
+	int pid = fork();
+	if (!pid) {
+		if (dup2(fd[1], 1) == -1 || close(fd[0]) == -1 || close(fd[1]) == -1
+			|| dup2(fderr[1], 2) == -1 || close(fderr[0]) == -1 || close(fderr[1]) == -1)
+			return err("error: fatal\n");
+		execve(av[0], av, env);
+		err("error: cannot execute " + std::string(av[0]) + "\n");
+		exit(1);
+	} else {
+		waitpid(pid, &status, 0);
+		close(fd[1]);
+		close(fderr[1]);
 		size_t	readed;
-        while ((readed = read(fd[0], buf, 1024)) > 0)
+		while ((readed = read(fd[0], buf, 1024)) > 0)
 		{
 			buf[readed] = 0;
-            res += buf;
+			res += buf;
 		}
-        close(fd[0]);
-        while (read(fderr[0], buf, 1024) > 0)
-            ;
-        close(fderr[0]);
-        return res;
-    }
-    return res;
+		close(fd[0]);
+		while (read(fderr[0], buf, 1024) > 0)
+			;
+		close(fderr[0]);
+		return res;
+	}
+	return res;
 }
 
 char verifyn(char c)
@@ -158,7 +158,10 @@ void	SendMsg(Client &client, Server &server, std::string &params)
 	while (!destinations.empty())
 	{
 		std::string	destination = destinations.substr(0, destinations.find(','));
-		destinations = destinations.substr(std::min(destinations.find(','), destinations.size()));
+		if (destinations.find(',') != std::string::npos)
+			destinations = destinations.substr(destinations.find(',') + 1);
+		else
+			destinations = "";
 		if (destination[0] == '#' || destination[0] == '&')
 			SendChannelMsg(client, server, destination, message);
 		else if (destination == "Bot")
