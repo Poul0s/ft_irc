@@ -1,6 +1,6 @@
 CC	=	c++
 
-CFLAGS	=	-Wall -Wextra -Werror -std=c++98 -MD -g
+CFLAGS	=	-Wall -Wextra -Werror -std=c++11 -MD -DGPT_TOKEN='"$(GPT_TOKEN)"' -g
 
 SRC		=	$(wildcard srcs/class/*.cpp)				\
 			$(wildcard srcs/commands/*.cpp)				\

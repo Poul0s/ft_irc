@@ -16,6 +16,7 @@
 # include "Server.hpp"
 # include <string>
 # include <list>
+# include <nlohmann/json.hpp>
 
 enum e_status
 {
@@ -65,6 +66,8 @@ class	Client {
 
 		void		disconnect(std::string reason);
 
+		const nlohmann::json	&get_bot_history() const;
+		void					add_bot_content(const std::string &role, const std::string &content);
 
 	private:
 		std::string	_ip;
@@ -79,6 +82,8 @@ class	Client {
 		int			_status;
 
 		const Server	&_attachedServer;
+
+		nlohmann::json	_botHistory;
 };
 
 #endif

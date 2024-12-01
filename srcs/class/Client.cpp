@@ -22,6 +22,8 @@ Client::Client(const Server &attachedServer) : _attachedServer(attachedServer)
 {
 	this->_op = false;
 	this->_status = GET_FORMAT;
+	this->_botHistory = nlohmann::json::array();
+	add_bot_content("system", "You are a helpful assistant.");
 }
 
 Client::~Client()
@@ -155,5 +157,18 @@ void	Client::disconnect(std::string reason)
 	}
 	this->_status = DISCONNECTED;
 	this->_fd = -1;
+}
+
+const nlohmann::json	&Client::get_bot_history() const
+{
+	return this->_botHistory;
+}
+
+void	Client::add_bot_content(const std::string &role, const std::string &content)
+{
+	nlohmann::json message;
+	message["role"] = role;
+	message["content"] = content;
+	this->_botHistory.push_back(message);
 }
 

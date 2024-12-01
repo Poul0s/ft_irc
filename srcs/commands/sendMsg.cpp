@@ -16,6 +16,8 @@
 #include "irc_error_codes.h"
 #include <algorithm>
 #include <sstream>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 void	SendChannelMsg(Client &client, Server &server, std::string &channelName, std::string &message)
 {
@@ -108,35 +110,37 @@ char verifyn(char c)
 
 void	ProcessBot(Client &client, Server &server, std::string &message)
 {
-	std::string re = "{ \
-			\"model\": \"gpt-3.5-turbo\", \
-			\"messages\": [ \
-			{ \
-				\"role\": \"system\", \
-				\"content\": \"You are a helpful assistant.\" \
-			}, \
-			{ \
-				\"role\": \"user\", \
-				\"content\": \"" + message + "\" \
-			} \
-			] \
-		}";
+	client.add_bot_content("user", message);
+
+	json req = json::parse(R"({
+		"model": "gpt-3.5-turbo"
+	})");
+	req["messages"] = client.get_bot_history();
+	std::string json_str = req.dump();
 	char *gpt[] = {
 		(char *) "/bin/curl",
 		(char *) "https://api.openai.com/v1/chat/completions",
 		(char *) "-H", (char *) "Content-Type: application/json",
-		(char *) "-H", (char *) "Authorization: Bearer sk-proj-m0cJ7UL5RcHqoAUDJ0BoT3BlbkFJlVahT9dx213Tf2QTmHGn",
-		(char *) "-d", (char *) re.c_str(),
+		(char *) "-H", (char *) (std::string("Authorization: Bearer ") + std::string(GPT_TOKEN)).c_str(),
+		(char *) "-d", (char *) json_str.c_str(),
 		(char *) 0
 	};
-	std::string response = curlRequest(gpt);
+	std::string response_str = curlRequest(gpt);
+	json response = json::parse(response_str);
+	std::string response_msg;
+	if (response.contains("choices") && response["choices"].is_array() && !response["choices"].empty() &&
+		response["choices"][0].contains("message") && response["choices"][0]["message"].contains("content") &&
+		response["choices"][0]["message"]["content"].is_string())
+	{
+		response_msg = response["choices"][0]["message"]["content"];
+		client.add_bot_content("system", response_msg);
+	}
+	else
+		response_msg = "Error while getting bot response.";
 
-	response = response.substr(response.find("content") + 11);
-	response = response.substr(0, response.find("\""));
+	std::transform(response_msg.begin(), response_msg.end(), response_msg.begin(), &verifyn);
 
-	std::transform(response.begin(), response.end(), response.begin(), &verifyn);
-
-	std::string	request = ":Bot!bot@" + server.get_ip() + " PRIVMSG " + client.get_username() + " :" + response;
+	std::string	request = ":Bot!bot@" + server.get_ip() + " PRIVMSG " + client.get_username() + " :" + response_msg;
 	client.send_request(request);
 }
 
